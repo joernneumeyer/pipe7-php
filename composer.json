@@ -1,0 +1,26 @@
+{
+  "name": "joernneumeyer/pipe7",
+  "description": "A library for easy and consistent data processing in PHP.",
+  "type": "library",
+  "license": "AGPL-3.0",
+  "authors": [
+    {
+      "name": "Jörn Neumeyer",
+      "email": "contact@joern-neumeyer.de"
+    }
+  ],
+  "scripts": {
+    "test": "pest"
+  },
+  "autoload": {
+    "psr-4": {
+      "Neu\\": "src/"
+    },
+    "files": [
+      "src/aliases.php"
+    ]
+  },
+  "require-dev": {
+    "pestphp/pest": "^1.0"
+  }
+}
