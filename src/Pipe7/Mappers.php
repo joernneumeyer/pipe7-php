@@ -3,13 +3,17 @@
   namespace Neu\Pipe7;
 
   use Closure;
-  use Symfony\Component\PropertyAccess\PropertyAccessor;
 
+  /**
+   * A collection of helpers for common data mapping operations.
+   * @package Neu\Pipe7
+   */
   final class Mappers {
     private static $_identity;
     private static $_toString;
 
     /**
+     * Returns the input value.
      * @return Closure
      */
     public static function identity(): Closure {
@@ -20,6 +24,7 @@
     }
 
     /**
+     * Converts the input to a string.
      * @return Closure
      */
     public static function toString(): Closure {

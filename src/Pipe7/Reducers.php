@@ -3,7 +3,6 @@
   namespace Neu\Pipe7;
 
   use Closure;
-  use Symfony\Component\PropertyAccess\PropertyAccessor;
 
   final class Reducers {
     private static $_sum;
@@ -11,7 +10,8 @@
     private static $_product;
 
     /**
-     * @param callable|null $selector
+     * Calculates the sum of all incoming elements.
+     * @param callable|null $selector A function to extract a value from the element which should currently be added to the sum.
      * @return Closure
      */
     public static function sum(?callable $selector = null): Closure {
@@ -33,7 +33,8 @@
     }
 
     /**
-     * @param callable|null $selector
+     * Calculates the average of all incoming elements.
+     * @param callable|null $selector A function to extract a value from the element which should currently be added to the average.
      * @return Closure
      */
     public static function average(?callable $selector = null): Closure {
@@ -51,7 +52,8 @@
     }
 
     /**
-     * @param callable|null $selector
+     * Calculates the product of all incoming elements.
+     * @param callable|null $selector A function to extract a value from the element which should currently be added to the product.
      * @return Closure
      */
     public static function product(?callable $selector = null): Closure {
@@ -69,7 +71,8 @@
     }
 
     /**
-     * @param callable $selector
+     * Groups all incoming elements by a specified property.
+     * @param callable $selector A function to extract the target property value.
      * @return Closure
      */
     public static function groupBy(callable $selector): Closure {
