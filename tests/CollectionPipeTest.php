@@ -16,8 +16,7 @@
     $atLeastForty = pipe($data)->filter(function ($p) {
       return $p->getAge() >= 40;
     })->toArray();
-    expect($atLeastForty)->toMatchArray([0 => $data[0], 2 => $data[2], 3 => $data[3],
-                                          4 => $data[4]]);
+    expect($atLeastForty)->toMatchArray([0 => $data[0], 2 => $data[2], 3 => $data[3], 4 => $data[4]]);
   });
 
   it('should reduce properly', function () use ($data) {
@@ -32,7 +31,38 @@
   })->throws(UnprocessableObject::class);
 
   it('shall return a reduced value as a new pipe, if it has been specified', function () use ($data) {
-    $p = pipe($data)->reduce(function($carry, $p) { $carry[] = $p->getUsername(); return $carry; }, [], true);
+    $p = pipe($data)->reduce(function ($carry, $p) {
+      $carry[] = $p->getUsername();
+      return $carry;
+    }, [], true);
     expect($p)->toBeInstanceOf(CollectionPipe::class);
     expect($p->toArray())->toMatchArray(['foobar', 'example', 'Matrixx', 'neo', 'rick', 'morty']);
+  });
+
+  it('should also work with a generator', function () {
+    function gen() {
+      yield 1;
+      yield 2;
+      yield 3;
+    }
+
+    $result = pipe(gen())->toArray();
+    expect($result)->toMatchArray([1, 2, 3]);
+  });
+
+  it('should not affect the previous pipe', function () {
+    $p = pipe([1, 2, 3]);
+    $p->map(function ($x) {
+      return $x * 2;
+    })->toArray();
+    $original = $p->toArray();
+    expect($original)->toMatchArray([1, 2, 3]);
+  });
+
+  it('should always return new instances, when an operation is being queued', function () {
+    $p = pipe([1, 2, 3]);
+    $q = $p->map(function ($x) {
+      return $x * 2;
+    });
+    expect($q)->not->toEqual($p);
   });
