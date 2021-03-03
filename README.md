@@ -28,7 +28,7 @@ So no element will be put through a callback (like in `array_map`), if it is not
 There are a lot of common operations which you may want to perform on you data (like average calculation, grouping elements, or converting them to strings).
 For such common use-cases, pipe7 provides a collection of helpers available in the classes `Mappers` and `Reducers`.
 
-To see all available helpers, please visit the [documentation](https://joern-neumeyer.de) or build it yourself using [phpDocumentor](https://phpdoc.org/).
+To see all available helpers, please visit the [documentation](https://docs.pipe7.joern-neumeyer.de/) or build it yourself using [phpDocumentor](https://phpdoc.org/).
 
 ## Performance
 pipe7 is a trade-off. It performs worse than the standard array functions, when it comes down to CPU time.
@@ -104,7 +104,7 @@ In contrast, `reduce` only returns a new `CollectionPipe` if its third parameter
 If the third parameter is `false`, or not set, a reduced `array`/`Iterator` would just be returned.
 If the third parameter is `true`, and the reduced value is not an `array`/`Iterator`, an `UnprocessableObject` exception will be thrown.
 
-For more information, please have a look at the [documentation](https://joern-neumeyer.de).
+For more information, please have a look at the [documentation](https://docs.pipe7.joern-neumeyer.de/).
 
 ## License
 pipe7 is available under the terms of the [GNU Lesser General Public License in version 3.0 or later](./LICENSE).
