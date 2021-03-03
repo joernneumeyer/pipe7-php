@@ -4,6 +4,10 @@
 
   use Closure;
 
+  /**
+   * A collection of common reduction or special mapping operations.
+   * @package Neu\Pipe7
+   */
   final class Reducers {
     private static $_sum;
     private static $_average;
