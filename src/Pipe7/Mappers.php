@@ -9,19 +9,7 @@
    * @package Neu\Pipe7
    */
   final class Mappers {
-    private static $_identity;
     private static $_toString;
-
-    /**
-     * Returns the input value.
-     * @return Closure
-     */
-    public static function identity(): Closure {
-      if (!self::$_identity) {
-        self::$_identity = function($x) { return $x; };
-      }
-      return self::$_identity;
-    }
 
     /**
      * Converts the input to a string.
