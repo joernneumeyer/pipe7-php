@@ -12,7 +12,7 @@
     }
   ],
   "scripts": {
-    "test": "pest"
+    "test": "pest --coverage"
   },
   "autoload": {
     "psr-4": {
