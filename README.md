@@ -42,24 +42,19 @@ As a reference, the array functions are used as a baseline for measurement.
     <tr>
       <th>use-case</th>
       <th>CPU</th>
-      <th>RAM</th>
+      <th>RAM (peak)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>array functions</td>
-      <td>100%</td>
-      <td>100%</td>
+      <td>when applying one transformation</td>
+      <td>&cong;250%</td>
+      <td>&cong;100%</td>
     </tr>
     <tr>
-      <td>pipe7</td>
-      <td style="background-color: red;">&cong;426%</td>
-      <td style="background-color: green;">&cong;83%</td>
-    </tr>
-    <tr>
-      <td>pipe7 with generator data source</td>
-      <td style="background-color: red;">&cong;464%</td>
-      <td style="background-color: green;">&cong;7%</td>
+      <td>when applying multiple transformation</td>
+      <td>&cong;250%</td>
+      <td>&lt;1%</td>
     </tr>
   </tbody>
 </table>
@@ -87,16 +82,19 @@ $p = pipe($data);
 Transforming elements:
 ```php
 $doubled = $p->map(function($x){ return $x * 2; })->toArray();
+// if you're using php7.4 or later,
+// better use arrow functions for more concise code
+$doubled = $p->map(fn($x) => $x * 2)->toArray();
 ```
 
 Filtering elements:
 ```php
-$even = $p->filter(function($x){ return $x % 2 === 0; })->toArray();
+$even = $p->filter(fn($x) => $x % 2 === 0)->toArray();
 ```
 
 Combining Elements:
 ```php
-$total = $p->reduce(function($carry, $x){ return $carry + $x; }, 0);
+$total = $p->reduce(fn($carry, $x) => $carry + $x, 0);
 ```
 
 As shown above, the methods `map` and `filter` always return a new `CollectionPipe`, from which the result has to be collected (e.g. via the `toArray` method).
