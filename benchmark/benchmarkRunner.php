@@ -1,12 +1,15 @@
 <?php
   require __DIR__ . '/bootstrap.php';
 
+  define('BENCH_SET_SIZE', $argc > 1 ? (int)$argv[1] : 5000000);
+  define('WARMUP_SET_SIZE', $argc > 2 ? (int)$argv[2] : 10000);
+
   function warmupSource() {
-    return makeBenchArray(10000);
+    return makeBenchArray(WARMUP_SET_SIZE);
   }
 
   function dataSource() {
-    return makeBenchArray(5000000);
+    return makeBenchArray(BENCH_SET_SIZE);
   }
 
   /**
