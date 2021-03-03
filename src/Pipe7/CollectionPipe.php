@@ -2,6 +2,7 @@
 
   namespace Neu\Pipe7;
 
+  use Closure;
   use Iterator;
 
   /**
@@ -21,10 +22,10 @@
      * CollectionPipe constructor.
      * @param $collection Iterator|array
      * @param int $op
-     * @param callable|null $cb
+     * @param Closure|null $cb
      * @throws UnprocessableObject
      */
-    private function __construct($collection, int $op = self::OP_NONE, ?callable $cb = null) {
+    private function __construct($collection, int $op = self::OP_NONE, ?Closure $cb = null) {
       if (is_array($collection)) {
         $this->sourceIterator = new \ArrayIterator($collection);
       } else {
@@ -40,33 +41,33 @@
 
     /**
      * Creates a new CollectionPipe, which transforms each element with the supplied mapper, when it is traversed.
-     * @param callable $transformer The transforming function to apply to each element.
+     * @param Closure $transformer The transforming function to apply to each element.
      * @return CollectionPipe
      * @throws UnprocessableObject
      */
-    public function map(callable $transformer): CollectionPipe {
+    public function map(Closure $transformer): CollectionPipe {
       return new CollectionPipe($this, self::OP_MAP, $transformer);
     }
 
     /**
      * Creates a new CollectionPipe, which filters the elements available during traversal, based on the result of the supplied {@see $predicate}.
-     * @param callable $predicate The predicate to apply to an element, to check if it should be used.
+     * @param Closure $predicate The predicate to apply to an element, to check if it should be used.
      * @return CollectionPipe
      * @throws UnprocessableObject
      */
-    public function filter(callable $predicate): CollectionPipe {
+    public function filter(Closure $predicate): CollectionPipe {
       return new CollectionPipe($this, self::OP_FILTER, $predicate);
     }
 
     /**
      *
-     * @param callable $reducer The function to apply.
+     * @param Closure $reducer The function to apply.
      * @param mixed|null $initial
      * @param bool $returnAsPipe If {$returnAsPipe} is set to true, and the reduced value is a valid data source, this method returns a new CollectionPipe for the reduced value.
      * @return mixed|CollectionPipe
      * @throws UnprocessableObject
      */
-    public function reduce(callable $reducer, $initial = null, bool $returnAsPipe = false) {
+    public function reduce(Closure $reducer, $initial = null, bool $returnAsPipe = false) {
       $carry = $initial;
       foreach ($this as $key => $value) {
         $carry = $reducer($carry, $value, $key);
@@ -76,6 +77,46 @@
       } else {
         return $carry;
       }
+    }
+
+    /**
+     *
+     * @param Closure|null $predicate
+     * @return mixed|null
+     */
+    public function first(?Closure $predicate = null) {
+      if ($predicate) {
+        foreach ($this as $value) {
+          if ($predicate($value)) {
+            return $value;
+          }
+        }
+      } else {
+        foreach ($this as $value) {
+          return $value;
+        }
+      }
+      return null;
+    }
+
+    /**
+     * @param Closure|null $predicate
+     * @return mixed|null
+     */
+    public function last(?Closure $predicate = null) {
+      $buffer = null;
+      if ($predicate) {
+        foreach ($this as $key => $value) {
+          if ($predicate($value, $key)) {
+            $buffer = $value;
+          }
+        }
+      } else {
+        foreach ($this as $value) {
+          $buffer = $value;
+        }
+      }
+      return $buffer;
     }
 
     /**
