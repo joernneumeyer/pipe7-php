@@ -9,6 +9,7 @@
    * @param $data array|Iterator The data source for the {@see CollectionPipe}.
    * @return CollectionPipe
    * @throws UnprocessableObject
+   * @package Neu\Pipe7
    */
   function pipe($data): CollectionPipe {
     return CollectionPipe::from($data);

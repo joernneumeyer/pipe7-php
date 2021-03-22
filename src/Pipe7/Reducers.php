@@ -89,4 +89,23 @@
         return $carry;
       };
     }
+
+    /**
+     * Returns the first element available in the pipe.
+     *
+     * If a predicate is supplied, the first element matching that predicate will be returned.
+     * @param callable|null $predicate A condition which has to be fulfilled by the element.
+     * @return Closure
+     */
+    public static function first(?callable $predicate = null): Closure {
+      return function($carry, $x, $key, CollectionPipe $pipe) use ($predicate) {
+        if ($predicate === null) {
+          $pipe->invalidate();
+          return $x;
+        } else if ($predicate($x, $key)) {
+          $pipe->invalidate();
+          return $x;
+        }
+      };
+    }
   }

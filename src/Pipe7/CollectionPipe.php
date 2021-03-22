@@ -6,7 +6,7 @@
   use Iterator;
 
   /**
-   * Class CollectionPipe
+   * An iterable data processing unit.
    * @package Neu\Pipe7
    */
   class CollectionPipe implements Iterator {
@@ -82,7 +82,7 @@
       self::isValidOperator($reducer);
       $carry = $initial;
       foreach ($this as $key => $value) {
-        $carry = $reducer($carry, $value, $key);
+        $carry = $reducer($carry, $value, $key, $this);
       }
       if ($returnAsPipe) {
         return new CollectionPipe($carry);

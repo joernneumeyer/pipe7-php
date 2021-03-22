@@ -4,6 +4,10 @@
 
   use Iterator;
 
+  /**
+   * Class ReverseArrayIterator
+   * @package Neu\Pipe7\Iterators
+   */
   class ReverseArrayIterator implements Iterator {
     public const PRESERVE_KEYS = 1;
 
@@ -21,14 +25,25 @@
       $this->rewind();
     }
 
+    /**
+     * Returns the current element.
+     * @return mixed
+     */
     public function current() {
       return $this->source[$this->keys[$this->keysIndex]];
     }
 
+    /**
+     * Moves the internal pointer to the next element.
+     */
     public function next() {
       --$this->keysIndex;
     }
 
+    /**
+     * Returns the current key.
+     * @return string|int
+     */
     public function key() {
       if ($this->options & self::PRESERVE_KEYS) {
         return $this->keys[$this->keysIndex];
@@ -37,10 +52,17 @@
       }
     }
 
+    /**
+     * Returns the iterators validity.
+     * @return bool
+     */
     public function valid() {
       return $this->keysIndex >= 0;
     }
 
+    /**
+     * Resets the iterator.
+     */
     public function rewind() {
       $this->keysIndex = $this->length - 1;
     }
