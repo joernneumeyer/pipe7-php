@@ -5,7 +5,7 @@
   use Iterator;
 
   /**
-   * Class ReverseArrayIterator
+   * An iterator which iterates an array in reverse order.
    * @package Neu\Pipe7\Iterators
    */
   class ReverseArrayIterator implements Iterator {
