@@ -1,20 +1,16 @@
 <?php
 
   class BenchmarkResult {
-    private string $name;
-    private int    $warmupRam;
-    private int    $benchRam;
-    private float  $warmupRuntime;
-    private float  $benchRuntime;
-    private int    $benchUsedRam;
+    private $name;
+    private $benchRam;
+    private $benchRuntime;
+    private $benchRamPeak;
 
-    public function __construct(string $name, int $warmupRam, int $benchRam, int $benchUsedRam, float $warmupRuntime, float $benchRuntime) {
+    public function __construct(string $name, array $memoryUsage, float $benchRuntime) {
       $this->name = $name;
-      $this->warmupRam = $warmupRam;
-      $this->benchRam = $benchRam;
-      $this->warmupRuntime = ((int)($warmupRuntime * 1000)) / 1000;
       $this->benchRuntime = ((int)($benchRuntime * 1000)) / 1000;
-      $this->benchUsedRam = $benchUsedRam;
+      $this->benchRam = $memoryUsage;
+      $this->benchRamPeak = array_reduce($memoryUsage, function($max, $x) { return max($max, $x); }, 0) - $memoryUsage[0];
     }
 
     /**
@@ -25,32 +21,10 @@
     }
 
     /**
-     * @param bool $formatted
-     * @return int
+     * @return array
      */
-    public function getWarmupRam(bool $formatted = false) {
-      if ($formatted) {
-        return formatRam($this->warmupRam);
-      }
-      return $this->warmupRam;
-    }
-
-    /**
-     * @param bool $formatted
-     * @return int
-     */
-    public function getBenchRam(bool $formatted = false) {
-      if ($formatted) {
-        return formatRam($this->benchRam);
-      }
+    public function getBenchRam() {
       return $this->benchRam;
-    }
-
-    /**
-     * @return float
-     */
-    public function getWarmupRuntime(): float {
-      return $this->warmupRuntime;
     }
 
     /**
@@ -60,28 +34,18 @@
       return $this->benchRuntime;
     }
 
-    /**
-     * @param bool $formatted
-     * @return int
-     */
-    public function getBenchUsedRam(bool $formatted = false) {
-      if ($formatted) {
-        return formatRam($this->benchUsedRam);
-      }
-      return $this->benchUsedRam;
-    }
-
     public function comparedToBaseline(BenchmarkResult $baseline) {
       $runtimeDiff = ((int)($this->benchRuntime / $baseline->benchRuntime * 10000)) / 100;
-      $ramDiff = $baseline->benchUsedRam ? (((int)($this->benchUsedRam / $baseline->benchUsedRam * 10000)) / 100 ?: '<1') : '100';
-      $ramLeakDiff = $baseline->benchRam ? (((int)($this->benchRam / $baseline->benchRam * 10000)) / 100 ?: '<1') : '100';
-      $result = "## runtime diff: $runtimeDiff% ({$this->getBenchRuntime()}s vs. {$baseline->getBenchRuntime()}s); ram diff: $ramDiff% ({$this->getBenchUsedRam(true)} vs. {$baseline->getBenchUsedRam(true)}); ram leak diff: $ramLeakDiff% ({$this->getBenchRam(true)} vs. {$baseline->getBenchRam(true)}) ##";
+      $ramPeakDiff = $baseline->benchRam ? (((int)($this->benchRamPeak / $baseline->benchRamPeak * 10000)) / 100 ?: '<1') : '100';
+      $formattedRamPeak = formatRam($this->benchRamPeak);
+      $formattedRamPeakBaseline = formatRam($baseline->benchRamPeak);
+      $result = "## runtime diff: $runtimeDiff% ({$this->getBenchRuntime()}s vs. {$baseline->getBenchRuntime()}s); ram peak diff: $ramPeakDiff% ({$formattedRamPeak} vs. {$formattedRamPeakBaseline}) ##";
       $resultLength = strlen($result);
       $border = str_repeat('#', $resultLength);
       return "$border\r\n$result\r\n$border";
     }
 
     public function __toString(): string {
-      return "$this->name:\r\n## warmup time: $this->warmupRuntime\r\n## warmup RAM: {$this->getWarmupRam(true)}\r\n## benchmark time: $this->benchRuntime\r\n## benchmark RAM: {$this->getBenchUsedRam(true)}\r\n### leaked RAM: {$this->getBenchRam(true)}";
+      return "$this->name:\r\n\r\n\r\n## benchmark time: $this->benchRuntime\r\n## benchmark RAM: {$this->getBenchUsedRam(true)}\r\n### leaked RAM: {$this->getBenchRam(true)}";
     }
   }

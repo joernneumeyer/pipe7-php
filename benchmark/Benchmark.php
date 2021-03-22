@@ -34,24 +34,16 @@
       return $this->name;
     }
 
-
-
     public function run() {
       $bench           = $this->benchmarkLogic;
-      $ramBeforeWarmup = memory_get_usage();
-      $warmupStartTime = microtime(true);
       (function($ds, $bench) {
         $bench(($ds)());
       })($this->warmupSource, $bench);
-      $warmupEndTime      = microtime(true);
-      $ramAfterWarmup     = memory_get_usage();
-      $ramBeforeBenchmark = memory_get_usage();
       $benchStartTime     = microtime(true);
       $ramUsedInBenchmark = (function($ds, $bench) {
-        return $bench(($ds)());
+        return iterator_to_array($bench(($ds)()));
       })($this->dataSource, $bench);
       $benchEndTime       = microtime(true);
-      $ramAfterBenchmark  = memory_get_usage();
-      return new BenchmarkResult($this->name, $ramAfterWarmup - $ramBeforeWarmup, $ramAfterBenchmark - $ramBeforeBenchmark, $ramUsedInBenchmark, $warmupEndTime - $warmupStartTime, $benchEndTime - $benchStartTime);
+      return new BenchmarkResult($this->name, $ramUsedInBenchmark, $benchEndTime - $benchStartTime);
     }
   }

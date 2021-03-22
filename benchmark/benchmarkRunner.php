@@ -1,6 +1,8 @@
 <?php
   require __DIR__ . '/bootstrap.php';
 
+  use function Neu\Pipe7\pipe;
+
   define('BENCH_SET_SIZE', $argc > 1 ? (int)$argv[1] : 5000000);
   define('WARMUP_SET_SIZE', $argc > 2 ? (int)$argv[2] : 10000);
 
@@ -33,39 +35,39 @@
    */
   $benchmarks = [
     b()->withName('array_filter')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam     = memory_get_usage();
+      yield memory_get_usage();
       $olderThanFifty = array_filter($data, function (BenchUser $u) {
         return $u->getAge() >= 50;
       });
       is_array($olderThanFifty);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('pipe7 filter')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam     = memory_get_usage();
+      yield memory_get_usage();
       $olderThanFifty = pipe($data)->filter(function (BenchUser $u) {
         return $u->getAge() >= 50;
       })->toArray();
       is_array($olderThanFifty);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('array_map')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam = memory_get_usage();
+      yield memory_get_usage();
       $names      = array_map(function (BenchUser $u) {
         return $u->getUsername();
       }, $data);
       is_array($names);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('pipe7 map')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam = memory_get_usage();
+      yield memory_get_usage();
       $names      = pipe($data)->map(function (BenchUser $u) {
         return $u->getUsername();
       })->toArray();
       is_array($names);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('array_reduce')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam = memory_get_usage();
+      yield memory_get_usage();
       $names      = array_reduce($data, function ($carry, BenchUser $u) {
         $firstLetter = $u->getUsername()[0];
         if (isset($carry[$firstLetter])) {
@@ -76,10 +78,10 @@
         return $carry;
       }, []);
       is_array($names);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('pipe7 reduce')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam = memory_get_usage();
+      yield memory_get_usage();
       $names      = pipe($data)->reduce(function ($carry, BenchUser $u) {
         $firstLetter = $u->getUsername()[0];
         if (isset($carry[$firstLetter])) {
@@ -90,10 +92,10 @@
         return $carry;
       }, []);
       is_array($names);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('array_filter into array_reduce')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam       = memory_get_usage();
+      yield memory_get_usage();
       $olderThanFifty   = array_filter($data, function (BenchUser $u) {
         return $u->getAge() >= 50;
       });
@@ -120,10 +122,10 @@
         return $carry;
       }, []);
       is_array($names);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('pipe7 filter into reduce')->withWarmupSource('warmupSource')->withDataSource('dataSource')->withBenchmarkLogic(function ($data) {
-      $initialRam = memory_get_usage();
+      yield memory_get_usage();
       $names      = pipe($data)->filter(function (BenchUser $u) {
         return $u->getAge() >= 50;
       })->reduce(function ($carry, BenchUser $u) {
@@ -148,28 +150,30 @@
         return $carry;
       }, []);
       is_array($names);
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('array_map from generator')->withWarmupSource('generatorWarmupSource')->withDataSource('generatorDataSource')->withBenchmarkLogic(function($generator) {
+      yield memory_get_usage();
       $data = iterator_to_array($generator);
-      $initialRam = memory_get_usage();
       $names      = array_map(function (BenchUser $u) {
         return $u->getUsername();
       }, $data);
       foreach ($names as $name) {
+        yield memory_get_usage();
         someTask($name);
       }
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     }),
     b()->withName('pipe7 map from generator')->withWarmupSource('generatorWarmupSource')->withDataSource('generatorDataSource')->withBenchmarkLogic(function($generator) {
-      $initialRam = memory_get_usage();
+      yield memory_get_usage();
       $names      = pipe($generator)->map(function (BenchUser $u) {
         return $u->getUsername();
       });
       foreach ($names as $name) {
+        yield memory_get_usage();
         someTask($name);
       }
-      return memory_get_usage() - $initialRam;
+      yield memory_get_usage();
     })
   ];
 
