@@ -19,7 +19,7 @@
       "Neu\\": "src/"
     },
     "files": [
-      "src/aliases.php"
+      "src/functions.php"
     ]
   },
   "require-dev": {

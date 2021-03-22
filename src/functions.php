@@ -1,7 +1,8 @@
 <?php
 
-  use Neu\Pipe7\CollectionPipe;
-  use Neu\Pipe7\UnprocessableObject;
+  namespace Neu\Pipe7;
+
+  use Iterator;
 
   /**
    * A small helper to create {@see CollectionPipe}s for varying iterable types.
