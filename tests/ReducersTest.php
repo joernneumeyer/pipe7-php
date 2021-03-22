@@ -1,6 +1,7 @@
 <?php
 
   use Neu\Pipe7\Reducers;
+  use function Neu\Pipe7\pipe;
 
   $data = require 'testData.php';
 
@@ -62,5 +63,16 @@
       ['color' => 'red', 'size' => '44'],], 'blue' => [['color' => 'blue', 'size' => '40'],
       ['color' => 'blue', 'size' => '42'], ['color' => 'blue', 'size' => '44'],],
                                    ]);
+  });
 
+  it('should return the first element', function() {
+    $data = [4,32,6];
+    $first = pipe($data)->reduce(Reducers::first());
+    expect($first)->toEqual(4);
+  });
+
+  it('should return the first element matching the predicate', function() {
+    $data = [4,33,6];
+    $first = pipe($data)->reduce(Reducers::first(function($x) { return $x % 2 !== 0; }));
+    expect($first)->toEqual(33);
   });
