@@ -10,11 +10,17 @@
    * @package Neu\Pipe7
    */
   class CollectionPipe implements Iterator {
+    private const CHUNK_SIZE = 10000;
+
     private $sourceIterator;
     private $op;
     /** @var Closure|StatefulOperator|null */
     private $cb;
     private $isValid = true;
+    private $buffer = [];
+    private $bufferKeys = [];
+    private $bufferKeyIndex = 0;
+    private $bufferSize = 0;
 
     private const OP_NONE   = 0;
     private const OP_MAP    = 1;
@@ -123,16 +129,39 @@
       $this->isValid = false;
     }
 
+    private function populateBuffer(): bool {
+      if ($this->buffer === [] || $this->bufferKeyIndex >= $this->bufferSize) {
+        if ($this->sourceIterator->valid()) {
+          $this->bufferKeyIndex = 0;
+          for ($i = 0; $i < self::CHUNK_SIZE && $this->sourceIterator->valid(); ++$i) {
+            $this->buffer[$this->sourceIterator->key()] = $this->sourceIterator->current();
+            $this->sourceIterator->next();
+          }
+          $this->bufferKeys = array_keys($this->buffer);
+          $this->bufferSize = count($this->buffer);
+        } else {
+          throw new \Exception('foobar');
+        }
+      }
+      return $this->buffer !== [];
+    }
+
     /**
      * {@inheritdoc}
      */
     public function current() {
+      if (!$this->populateBuffer()) {
+        return null;
+      }
+      $key = $this->bufferKeys[$this->bufferKeyIndex++];
+      $value = $this->buffer[$key];
+      array_splice($this->buffer, 0, 1);
       switch ($this->op) {
         case self::OP_MAP:
           $map = $this->cb instanceof StatefulOperator ? [$this->cb, 'apply'] : $this->cb;
-          return $map($this->sourceIterator->current(), $this->sourceIterator->key(), $this);
+          return $map($value, $key, $this);
         default:
-          return $this->sourceIterator->current();
+          return $value;
       }
     }
 
@@ -160,7 +189,7 @@
      * {@inheritdoc}
      */
     public function valid() {
-      return $this->sourceIterator->valid() && $this->isValid;
+      return ($this->sourceIterator->valid() || $this->buffer !== []) && $this->isValid && $this->bufferKeyIndex < $this->bufferSize;
     }
 
     /**
@@ -169,6 +198,7 @@
     public function rewind() {
       $this->sourceIterator->rewind();
       $this->isValid = true;
+      $this->buffer = [];
       if ($this->cb instanceof StatefulOperator) {
         $this->cb->rewind();
       }
