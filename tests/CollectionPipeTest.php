@@ -2,6 +2,7 @@
 
   use Neu\Pipe7\CollectionPipe;
   use Neu\Pipe7\UnprocessableObject;
+  use function Neu\Pipe7\pipe;
 
   $data = require 'testData.php';
 
@@ -67,27 +68,18 @@
     expect($q)->not->toEqual($p);
   });
 
-  it('should return the first element', function() use ($data) {
-    $first = pipe($data)->first();
-    expect($first)->toEqual($data[0]);
+  it('should rewind stateful operators', function () {
+    pipe([1,2,3])->filter(new class extends \Neu\Pipe7\CallableOperator {
+      public function apply(...$args) {
+        return true;
+      }
+
+      public function rewind(): void {
+        expect(true)->toBeTrue();
+      }
+    })->toArray();
   });
 
-  it('should return the first element which matches the predicate', function() use ($data) {
-    $first = pipe($data)->first(function(User $u) { return $u->getAge() < 35; });
-    expect($first)->toEqual($data[1]);
-  });
-
-  it('should return the last element', function() use ($data) {
-    $last = pipe($data)->last();
-    expect($last)->toEqual($data[5]);
-  });
-
-  it('should return the last element which matches the predicate', function() use ($data) {
-    $last = pipe($data)->last(function(User $u) { return $u->getAge() > 50; });
-    expect($last)->toEqual($data[4]);
-  });
-
-  it('should return null, if no fitting first element can be found', function() use ($data) {
-    $first = pipe($data)->first(function (User $u) { return $u->getAge() > 100; });
-    expect($first)->toBeNull();
-  });
+  it('should throw, if an invalid operator has been supplied', function() {
+    pipe([1,2,3])->filter(4);
+  })->throws(Exception::class);
