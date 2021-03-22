@@ -12,7 +12,9 @@
   class CollectionPipe implements Iterator {
     private $sourceIterator;
     private $op;
+    /** @var Closure|StatefulOperator|null */
     private $cb;
+    private $isValid = true;
 
     private const OP_NONE   = 0;
     private const OP_MAP    = 1;
@@ -22,10 +24,10 @@
      * CollectionPipe constructor.
      * @param $collection Iterator|array
      * @param int $op
-     * @param Closure|null $cb
+     * @param StatefulOperator|Closure|null $cb
      * @throws UnprocessableObject
      */
-    private function __construct($collection, int $op = self::OP_NONE, ?Closure $cb = null) {
+    private function __construct($collection, int $op = self::OP_NONE, $cb = null) {
       if (is_array($collection)) {
         $this->sourceIterator = new \ArrayIterator($collection);
       } else {
@@ -37,37 +39,47 @@
       }
       $this->op = $op;
       $this->cb = $cb;
+      if ($cb) {
+        self::isValidOperator($cb);
+      }
     }
 
     /**
      * Creates a new CollectionPipe, which transforms each element with the supplied mapper, when it is traversed.
-     * @param Closure $transformer The transforming function to apply to each element.
+     *
+     * $transformer signature: fn(mixed $currentItem, mixed $currentKey, CollectionPipe $pipeInstance) => mixed
+     * @param StatefulOperator|Closure $transformer The transforming function to apply to each element.
      * @return CollectionPipe
      * @throws UnprocessableObject
      */
-    public function map(Closure $transformer): CollectionPipe {
+    public function map($transformer): CollectionPipe {
+      self::isValidOperator($transformer);
       return new CollectionPipe($this, self::OP_MAP, $transformer);
     }
 
     /**
      * Creates a new CollectionPipe, which filters the elements available during traversal, based on the result of the supplied {@see $predicate}.
-     * @param Closure $predicate The predicate to apply to an element, to check if it should be used.
+     *
+     * $predicate signature: fn(mixed $currentItem, mixed $currentKey, CollectionPipe $pipeInstance) => bool
+     * @param StatefulOperator|Closure $predicate The predicate to apply to an element, to check if it should be used.
      * @return CollectionPipe
      * @throws UnprocessableObject
      */
-    public function filter(Closure $predicate): CollectionPipe {
+    public function filter($predicate): CollectionPipe {
+      self::isValidOperator($predicate);
       return new CollectionPipe($this, self::OP_FILTER, $predicate);
     }
 
     /**
      *
-     * @param Closure $reducer The function to apply.
+     * @param StatefulOperator|Closure $reducer The function to apply.
      * @param mixed|null $initial
      * @param bool $returnAsPipe If {$returnAsPipe} is set to true, and the reduced value is a valid data source, this method returns a new CollectionPipe for the reduced value.
      * @return mixed|CollectionPipe
      * @throws UnprocessableObject
      */
-    public function reduce(Closure $reducer, $initial = null, bool $returnAsPipe = false) {
+    public function reduce($reducer, $initial = null, bool $returnAsPipe = false) {
+      self::isValidOperator($reducer);
       $carry = $initial;
       foreach ($this as $key => $value) {
         $carry = $reducer($carry, $value, $key);
@@ -77,46 +89,6 @@
       } else {
         return $carry;
       }
-    }
-
-    /**
-     *
-     * @param Closure|null $predicate
-     * @return mixed|null
-     */
-    public function first(?Closure $predicate = null) {
-      if ($predicate) {
-        foreach ($this as $value) {
-          if ($predicate($value)) {
-            return $value;
-          }
-        }
-      } else {
-        foreach ($this as $value) {
-          return $value;
-        }
-      }
-      return null;
-    }
-
-    /**
-     * @param Closure|null $predicate
-     * @return mixed|null
-     */
-    public function last(?Closure $predicate = null) {
-      $buffer = null;
-      if ($predicate) {
-        foreach ($this as $key => $value) {
-          if ($predicate($value, $key)) {
-            $buffer = $value;
-          }
-        }
-      } else {
-        foreach ($this as $value) {
-          $buffer = $value;
-        }
-      }
-      return $buffer;
     }
 
     /**
@@ -131,6 +103,12 @@
       return $preserveKeys ? $arr : array_values($arr);
     }
 
+    private static function isValidOperator($op): void {
+      if (!(is_callable($op) || $op instanceof StatefulOperator)) {
+        throw new \Exception('Invalid operator supplied! Make sure to pass either a \'callable\' or an instance of \'' . StatefulOperator::class . '\'!');
+      }
+    }
+
     /**
      * Factory method to create new CollectionPipe instances.
      * @param $collection array|Iterator The data source.
@@ -141,13 +119,18 @@
       return new CollectionPipe($collection);
     }
 
+    public function invalidate(): void {
+      $this->isValid = false;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function current() {
       switch ($this->op) {
         case self::OP_MAP:
-          return ($this->cb)($this->sourceIterator->current(), $this->sourceIterator->key());
+          $map = $this->cb instanceof StatefulOperator ? [$this->cb, 'apply'] : $this->cb;
+          return $map($this->sourceIterator->current(), $this->sourceIterator->key(), $this);
         default:
           return $this->sourceIterator->current();
       }
@@ -160,7 +143,7 @@
       $this->sourceIterator->next();
       if ($this->op === self::OP_FILTER) {
         $predicate = $this->cb;
-        while ($this->sourceIterator->valid() && !$predicate($this->sourceIterator->current(), $this->sourceIterator->key())) {
+        while ($this->sourceIterator->valid() && $this->isValid && !$predicate($this->sourceIterator->current(), $this->sourceIterator->key(), $this)) {
           $this->sourceIterator->next();
         }
       }
@@ -177,7 +160,7 @@
      * {@inheritdoc}
      */
     public function valid() {
-      return $this->sourceIterator->valid();
+      return $this->sourceIterator->valid() && $this->isValid;
     }
 
     /**
@@ -185,5 +168,9 @@
      */
     public function rewind() {
       $this->sourceIterator->rewind();
+      $this->isValid = true;
+      if ($this->cb instanceof StatefulOperator) {
+        $this->cb->rewind();
+      }
     }
   }
