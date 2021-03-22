@@ -1,6 +1,7 @@
 <?php
 
   use Neu\Pipe7\Mappers;
+  use function Neu\Pipe7\pipe;
 
   it('should convert the original values to strings', function () {
     $data = [5,8,1];
