@@ -4,12 +4,28 @@
   define('BENCH_SET_SIZE', $argc > 1 ? (int)$argv[1] : 5000000);
   define('WARMUP_SET_SIZE', $argc > 2 ? (int)$argv[2] : 10000);
 
+  echo 'Benchmark data set size: ' . BENCH_SET_SIZE . ' entries' . PHP_EOL;
+  echo 'Warm-up data set size: ' . WARMUP_SET_SIZE . ' entries' . PHP_EOL;
+  echo PHP_EOL;
+
   function warmupSource() {
     return makeBenchArray(WARMUP_SET_SIZE);
   }
 
   function dataSource() {
     return makeBenchArray(BENCH_SET_SIZE);
+  }
+
+  function generatorWarmupSource() {
+    return makeBenchGenerator(WARMUP_SET_SIZE);
+  }
+
+  function generatorDataSource() {
+    return makeBenchGenerator(BENCH_SET_SIZE);
+  }
+
+  function someTask(...$args) {
+
   }
 
   /**
@@ -134,6 +150,27 @@
       is_array($names);
       return memory_get_usage() - $initialRam;
     }),
+    b()->withName('array_map from generator')->withWarmupSource('generatorWarmupSource')->withDataSource('generatorDataSource')->withBenchmarkLogic(function($generator) {
+      $data = iterator_to_array($generator);
+      $initialRam = memory_get_usage();
+      $names      = array_map(function (BenchUser $u) {
+        return $u->getUsername();
+      }, $data);
+      foreach ($names as $name) {
+        someTask($name);
+      }
+      return memory_get_usage() - $initialRam;
+    }),
+    b()->withName('pipe7 map from generator')->withWarmupSource('generatorWarmupSource')->withDataSource('generatorDataSource')->withBenchmarkLogic(function($generator) {
+      $initialRam = memory_get_usage();
+      $names      = pipe($generator)->map(function (BenchUser $u) {
+        return $u->getUsername();
+      });
+      foreach ($names as $name) {
+        someTask($name);
+      }
+      return memory_get_usage() - $initialRam;
+    })
   ];
 
   $results = [];
