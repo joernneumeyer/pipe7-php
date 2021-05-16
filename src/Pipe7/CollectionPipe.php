@@ -4,6 +4,7 @@
 
   use Closure;
   use Iterator;
+  use Exception;
 
   /**
    * An iterable data processing unit.
@@ -12,14 +13,17 @@
   class CollectionPipe implements Iterator {
     private const CHUNK_SIZE = 10000;
 
+    private $useIntermediateResults = false;
+
     private $sourceIterator;
     private $op;
     /** @var Closure|StatefulOperator|null */
     private $cb;
+    private $cbOp;
     private $isValid = true;
     private $buffer = [];
     private $bufferKeys = [];
-    private $bufferKeyIndex = 0;
+    private $bufferKeyIndex = -1;
     private $bufferSize = 0;
 
     private const OP_NONE   = 0;
@@ -47,7 +51,20 @@
       $this->cb = $cb;
       if ($cb) {
         self::isValidOperator($cb);
+        if ($cb instanceof StatefulOperator) {
+          $this->cbOp = Closure::fromCallable([$cb, 'apply']);
+        } else {
+          $this->cbOp = $cb;
+        }
       }
+    }
+
+    /**
+     * @return $this
+     */
+    public function enableIntermediateResults(): CollectionPipe {
+      $this->useIntermediateResults = true;
+      return $this;
     }
 
     /**
@@ -139,9 +156,11 @@
           }
           $this->bufferKeys = array_keys($this->buffer);
           $this->bufferSize = count($this->buffer);
-        } else {
-          throw new \Exception('foobar');
+          $this->bufferKeyIndex = -1;
         }
+//        else {
+//          throw new \Exception('foobar');
+//        }
       }
       return $this->buffer !== [];
     }
@@ -150,16 +169,20 @@
      * {@inheritdoc}
      */
     public function current() {
-      if (!$this->populateBuffer()) {
-        return null;
+      if ($this->useIntermediateResults) {
+        if (!$this->populateBuffer()) {
+          return null;
+        }
+        $key = $this->bufferKeys[++$this->bufferKeyIndex];
+        $value = $this->buffer[$key];
+      } else {
+        $value = $this->sourceIterator->current();
+        $key = $this->sourceIterator->key();
       }
-      $key = $this->bufferKeys[$this->bufferKeyIndex++];
-      $value = $this->buffer[$key];
-      array_splice($this->buffer, 0, 1);
+
       switch ($this->op) {
         case self::OP_MAP:
-          $map = $this->cb instanceof StatefulOperator ? [$this->cb, 'apply'] : $this->cb;
-          return $map($value, $key, $this);
+          return ($this->cbOp)($value, $key, $this);
         default:
           return $value;
       }
@@ -171,7 +194,7 @@
     public function next() {
       $this->sourceIterator->next();
       if ($this->op === self::OP_FILTER) {
-        $predicate = $this->cb;
+        $predicate = $this->cbOp;
         while ($this->sourceIterator->valid() && $this->isValid && !$predicate($this->sourceIterator->current(), $this->sourceIterator->key(), $this)) {
           $this->sourceIterator->next();
         }
@@ -189,7 +212,14 @@
      * {@inheritdoc}
      */
     public function valid() {
-      return ($this->sourceIterator->valid() || $this->buffer !== []) && $this->isValid && $this->bufferKeyIndex < $this->bufferSize;
+      $dataAvailable = $this->sourceIterator->valid() || $this->buffer !== [];
+      $bufferNotExceeded = $this->bufferKeyIndex < $this->bufferSize - 1;
+      $iteratorIsValid = $dataAvailable && $this->isValid;
+      if ($this->bufferSize > 0) {
+        return $iteratorIsValid && $bufferNotExceeded;
+      } else {
+        return $iteratorIsValid;
+      }
     }
 
     /**
@@ -199,6 +229,7 @@
       $this->sourceIterator->rewind();
       $this->isValid = true;
       $this->buffer = [];
+      $this->bufferKeyIndex = -1;
       if ($this->cb instanceof StatefulOperator) {
         $this->cb->rewind();
       }
