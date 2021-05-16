@@ -41,8 +41,8 @@ As a reference, the array functions are used as a baseline for measurement.
   <thead>
     <tr>
       <th>use-case</th>
-      <th>CPU</th>
-      <th>RAM (peak)</th>
+      <th>CPU (time compared to baseline)</th>
+      <th>RAM (required/used memory to compute the result, compared to baseline)</th>
     </tr>
   </thead>
   <tbody>
