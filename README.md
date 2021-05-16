@@ -2,6 +2,9 @@
 pipe7 is an `Iterator`-based data processing library.
 It aims to tackle some issues one may encounter while using regular higher-order functions built in to PHP (like `array_filter`, `array_map`, and `array_reduce`).
 
+## PHPDoc
+PHPDocumentor generated docs can be found here: [https://docs.pipe7.joern-neumeyer.de/](https://docs.pipe7.joern-neumeyer.de/).
+
 ## Installation
 `composer require neu/pipe7`
 
@@ -105,6 +108,35 @@ If the third parameter is `false`, or not set, a reduced `array`/`Iterator` woul
 If the third parameter is `true`, and the reduced value is not an `array`/`Iterator`, an `UnprocessableObject` exception will be thrown.
 
 For more information, please have a look at the [documentation](https://docs.pipe7.joern-neumeyer.de/).
+
+## Stateful operators
+Some operations cannot easily be expressed in a single function.
+Such an operation could, for example, be a limitation on the items being processed in a given pipe.
+So, if you need to implement such an operation, create a `class` which implements the `interface` `Neu\Pipe7\StatefulOperator`.
+
+If you want to save yourself a bit of boilerplate code, consider extending the `class` `Neu\Pipe7\CallableOperator`.
+By doing so, you get an implementation for the `__invoke` method, and a dummy implementation for the `rewind` method, if your operation does not require any specific resetting.
+
+Stateful operators can be passed as arguments to pipes in the same way you would otherwise pass a `Closure`.
+
+## How will the passed operations be evaluated?
+Depending on the task a particular pipe has to fulfill, it may be important to know how a pipe's logic will be executed.
+
+### Mappers
+Signature: `function(mixed $value, mixed $key, Neu\Pipe7\CollectionPipe $this)`
+
+If you created a pipe, which should transform incoming elements, that logic will be executed when the `current` method on the pipe is called.
+
+### Filters
+Signature: `function(mixed $value, mixed $key, Neu\Pipe7\CollectionPipe $this)`
+
+Filters are called, when the `next` method on the pipe is called, as they determine, whether an element shall be emitted by the pipe or not.
+
+### Reducers
+Signature: `function(mixed #carry, mixed $value, mixed $key, Neu\Pipe7\CollectionPipe $this)`
+
+Reducers have another signature than mappers and filters, since it is their job to create a single new value from the elements provided to them.
+So, they may be used to calculate sums or similar results.
 
 ## License
 pipe7 is available under the terms of the [GNU Lesser General Public License in version 3.0 or later](./LICENSE).
