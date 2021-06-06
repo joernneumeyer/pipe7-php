@@ -45,6 +45,19 @@
       return "$border\r\n$result\r\n$border";
     }
 
+    public function toArray(BenchmarkResult $baseline) {
+      $runtimeDiff = ((int)($this->benchRuntime / $baseline->benchRuntime * 10000)) / 100;
+      $ramPeakDiff = $baseline->benchRam ? (((int)($this->benchRamPeak / $baseline->benchRamPeak * 10000)) / 100 ?: '<1') : '100';
+      return [
+        'runtimeDiff' => $runtimeDiff,
+        'runtime' => $this->getBenchRuntime(),
+        'baselineRuntime' => $baseline->getBenchRuntime(),
+        'ramPeakDiff' => $ramPeakDiff,
+        'ramPeak' => $this->benchRamPeak,
+        'baselineRamPeak' => $baseline->benchRamPeak,
+      ];
+    }
+
     public function __toString(): string {
       return "$this->name:\r\n\r\n\r\n## benchmark time: $this->benchRuntime\r\n## benchmark RAM: {$this->getBenchUsedRam(true)}\r\n### leaked RAM: {$this->getBenchRam(true)}";
     }

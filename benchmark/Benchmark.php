@@ -36,13 +36,15 @@
 
     public function run() {
       $bench           = $this->benchmarkLogic;
+      $warmupSource = is_callable($this->warmupSource) ? ($this->warmupSource)() : $this->warmupSource;
       (function($ds, $bench) {
-        $bench(($ds)());
-      })($this->warmupSource, $bench);
+        $bench($ds);
+      })($warmupSource, $bench);
       $benchStartTime     = microtime(true);
+      $dataSource = is_callable($this->dataSource) ? ($this->dataSource)() : $this->dataSource;
       $ramUsedInBenchmark = (function($ds, $bench) {
-        return iterator_to_array($bench(($ds)()));
-      })($this->dataSource, $bench);
+        return iterator_to_array($bench($ds));
+      })($dataSource, $bench);
       $benchEndTime       = microtime(true);
       return new BenchmarkResult($this->name, $ramUsedInBenchmark, $benchEndTime - $benchStartTime);
     }
