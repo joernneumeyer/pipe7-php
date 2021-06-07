@@ -30,6 +30,8 @@ jobs:
         run: composer install --prefer-dist --no-progress
       - name: Run tests
         run: composer test
+      - name: Check coverage
+        run: composer test:coverage
       - name: Analyze code
         run: composer run phpstan
 
