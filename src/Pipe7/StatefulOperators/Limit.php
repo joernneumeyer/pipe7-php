@@ -7,7 +7,9 @@
   use Neu\Pipe7\StatefulOperator;
 
   class Limit extends CallableOperator {
+    /** @var int */
     private $i = 0;
+    /** @var int */
     private $maxLength = 0;
 
     /**

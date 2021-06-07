@@ -27,7 +27,8 @@
     expect($totalAge)->toEqual(270);
   });
 
-  it('should throw on an invalid construction input', function () use ($data) {
+  it('should throw on an invalid construction input', function () {
+    /** @phpstan-ignore-next-line */
     pipe(45);
   })->throws(UnprocessableObject::class);
 
@@ -41,7 +42,10 @@
   });
 
   it('should also work with a generator', function () {
-    function gen() {
+    /**
+     * @return Generator<int>
+     */
+    function gen(): Generator {
       yield 1;
       yield 2;
       yield 3;
@@ -81,6 +85,7 @@
   });
 
   it('should throw, if an invalid operator has been supplied', function() {
+    /** @phpstan-ignore-next-line */
     pipe([1,2,3])->filter(4);
   })->throws(Exception::class);
 

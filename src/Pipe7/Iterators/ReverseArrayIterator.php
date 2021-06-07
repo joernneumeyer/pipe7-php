@@ -6,17 +6,28 @@
 
   /**
    * An iterator which iterates an array in reverse order.
+   * @implements Iterator<mixed>
    * @package Neu\Pipe7\Iterators
    */
   class ReverseArrayIterator implements Iterator {
     public const PRESERVE_KEYS = 1;
 
+    /** @var array<mixed> */
     private $source;
+    /** @var int[]|string[] */
     private $keys;
+    /** @var int|string */
     private $keysIndex;
+    /** @var int */
     private $length;
+    /** @var int */
     private $options;
 
+    /**
+     * ReverseArrayIterator constructor.
+     * @param array<mixed> $source
+     * @param int $options
+     */
     public function __construct(array $source, int $options = 0) {
       $this->source = $source;
       $this->keys = array_keys($source);

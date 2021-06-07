@@ -7,6 +7,10 @@
    * @package Neu\Pipe7
    */
   abstract class CallableOperator implements StatefulOperator {
+    /**
+     * @param array<mixed> ...$args
+     * @return mixed
+     */
     public function __invoke(...$args) {
       return $this->apply(...$args);
     }

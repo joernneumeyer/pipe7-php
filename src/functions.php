@@ -2,11 +2,12 @@
 
   namespace Neu\Pipe7;
 
+  use Closure;
   use Iterator;
 
   /**
    * A small helper to create {@see CollectionPipe}s for varying iterable types.
-   * @param $data array|Iterator The data source for the {@see CollectionPipe}.
+   * @param array<mixed>|Iterator<mixed> $data The data source for the {@see CollectionPipe}.
    * @return CollectionPipe
    * @throws UnprocessableObject
    * @package Neu\Pipe7
@@ -15,6 +16,11 @@
     return CollectionPipe::from($data);
   }
 
+  /**
+   * @param Iterator<mixed> $iterator
+   * @param int|null $n
+   * @return Closure|mixed
+   */
   function take(Iterator $iterator, ?int $n = null) {
     if ($n === null) {
       return function (int $n) use ($iterator) {

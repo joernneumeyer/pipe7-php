@@ -8,22 +8,31 @@
 
   /**
    * An iterable data processing unit.
+   * @implements Iterator<mixed>
    * @package Neu\Pipe7
    */
   class CollectionPipe implements Iterator {
     private const CHUNK_SIZE = 10000;
 
+    /** @var bool */
     private $useIntermediateResults = false;
-
+    /** @var Iterator<mixed> */
     private $sourceIterator;
+    /** @var int */
     private $op;
     /** @var Closure|StatefulOperator|null */
     private $cb;
+    /** @var Closure|StatefulOperator  */
     private $cbOp;
+    /** @var bool */
     private $isValid = true;
+    /** @var array<mixed> */
     private $buffer = [];
+    /** @var array<string> */
     private $bufferKeys = [];
+    /** @var int */
     private $bufferKeyIndex = -1;
+    /** @var int */
     private $bufferSize = 0;
 
     private const OP_NONE   = 0;
@@ -32,7 +41,7 @@
 
     /**
      * CollectionPipe constructor.
-     * @param $collection Iterator|array
+     * @param Iterator<mixed>|array<mixed> $collection
      * @param int $op
      * @param StatefulOperator|Closure|null $cb
      * @throws UnprocessableObject
@@ -119,13 +128,17 @@
      *
      * Array keys are preserved by default.
      * @param bool $preserveKeys Flag to determine, whether array keys should be preserved.
-     * @return array
+     * @return array<mixed>
      */
     public function toArray(bool $preserveKeys = true): array {
       $arr = iterator_to_array($this);
       return $preserveKeys ? $arr : array_values($arr);
     }
 
+    /**
+     * @param mixed $op
+     * @throws Exception
+     */
     private static function isValidOperator($op): void {
       if (!(is_callable($op) || $op instanceof StatefulOperator)) {
         throw new \Exception('Invalid operator supplied! Make sure to pass either a \'callable\' or an instance of \'' . StatefulOperator::class . '\'!');
@@ -134,7 +147,7 @@
 
     /**
      * Factory method to create new CollectionPipe instances.
-     * @param $collection array|Iterator The data source.
+     * @param array<mixed>|Iterator<mixed> $collection The data source.
      * @return CollectionPipe
      * @throws UnprocessableObject
      */
