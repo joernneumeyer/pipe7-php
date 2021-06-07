@@ -9,6 +9,7 @@
    * @package Neu\Pipe7
    */
   final class Mappers {
+    /** @var Closure|null */
     private static $_toString;
 
     /**

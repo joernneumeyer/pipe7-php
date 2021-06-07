@@ -9,8 +9,11 @@
    * @package Neu\Pipe7
    */
   final class Reducers {
+    /** @var Closure|null */
     private static $_sum;
+    /** @var Closure|null */
     private static $_average;
+    /** @var Closure|null */
     private static $_product;
 
     /**
@@ -32,7 +35,7 @@
       return self::$_sum;
     }
 
-    private static function addNumberToAverage(float $average, float $newElement, int $index) {
+    private static function addNumberToAverage(float $average, float $newElement, int $index): float {
       return ($average * $index + $newElement) / ($index + 1);
     }
 

@@ -6,7 +6,7 @@
 
   final class Sources {
     /**
-     * @return Generator
+     * @return Generator<int>
      */
     public static function primes(): Generator {
       $primes = [];
@@ -29,7 +29,7 @@
      * @param int $n
      * @param int $offset
      * @param int $step
-     * @return Generator
+     * @return Generator<int>
      */
     public static function range(int $n, int $offset = 0, int $step = 1): Generator {
       if ($offset > $n) {
