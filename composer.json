@@ -12,7 +12,8 @@
     }
   ],
   "scripts": {
-    "test": "pest --coverage",
+    "test": "pest",
+    "test:coverage": "pest --coverage",
     "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon"
   },
   "autoload": {
