@@ -19,12 +19,9 @@
     if ($n === null) {
       return function (int $n) use ($iterator) {
         $result = [];
-        foreach ($iterator as $i) {
-          if (--$n > -1) {
-            $result[] = $i;
-          } else {
-            break;
-          }
+        for ($i = 0; $i < $n && $iterator->valid(); ++$i) {
+          $result[] = $iterator->current();
+          $iterator->next();
         }
         return $result;
       };
