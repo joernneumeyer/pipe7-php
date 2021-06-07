@@ -12,7 +12,8 @@
     }
   ],
   "scripts": {
-    "test": "pest --coverage"
+    "test": "pest --coverage",
+    "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon"
   },
   "autoload": {
     "psr-4": {
@@ -23,6 +24,7 @@
     ]
   },
   "require-dev": {
-    "pestphp/pest": "^1.0"
+    "pestphp/pest": "^1.0",
+    "phpstan/phpstan": "^0.12.88"
   }
 }
