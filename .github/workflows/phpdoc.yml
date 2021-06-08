@@ -27,7 +27,7 @@ jobs:
       - name: Install PHPDocumentor
         run: |
           wget https://phpdoc.org/phpDocumentor.phar
-          alias phpdoc=php "$(pwd)/phpDocumentor.phar"
+          alias phpdoc="php $(pwd)/phpDocumentor.phar"
       - name: Build docs
         run: phpdoc
       - name: Deploy
