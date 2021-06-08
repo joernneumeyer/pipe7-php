@@ -1,6 +1,2 @@
-vendor/
-.phpunit.result.cache
-composer.lock
-.phpdoc
-.idea/
-sandbox.php
+*
+!.gitignore
