@@ -24,12 +24,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: Install PHPDocumentor
-        run: |
-          wget https://phpdoc.org/phpDocumentor.phar
-          alias phpdoc="php $(pwd)/phpDocumentor.phar"
+      - name: Download PHPDocumentor
+        run: wget https://phpdoc.org/phpDocumentor.phar
       - name: Build docs
-        run: phpdoc
+        run: php phpDocumentor.phar
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
