@@ -111,4 +111,15 @@
         }
       };
     }
+
+    /**
+     * A reducer to join a series of incoming strings, or objects representable as strings.
+     * @param string $glue The character (group) used between the joined strings.
+     * @return Closure
+     */
+    public static function join(string $glue = '') {
+      return function($carry, $x) use ($glue) {
+        return $carry ? $carry . $glue . $x : $x;
+      };
+    }
   }

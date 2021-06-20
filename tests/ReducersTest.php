@@ -76,3 +76,9 @@
     $first = pipe($data)->reduce(Reducers::first(function($x) { return $x % 2 !== 0; }));
     expect($first)->toEqual(33);
   });
+
+  it('should join all strings together', function() {
+    $expected = 'hello.world.bar';
+    $result = pipe(['hello','world','bar'])->reduce(Reducers::join('.'), '');
+    expect($result)->toEqual($expected);
+  });
