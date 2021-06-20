@@ -17,7 +17,7 @@
      * @return Limit
      */
     public static function limit(int $count): Limit {
-      return (new Limit())->maxLength($count);
+      return new Limit($count);
     }
 
     /**

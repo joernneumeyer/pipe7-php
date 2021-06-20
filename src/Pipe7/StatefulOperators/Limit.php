@@ -12,30 +12,21 @@
     /** @var int */
     private $i = 0;
     /** @var int */
-    private $maxLength = 0;
+    private $maxLength;
 
     /**
-     * @param int|null $value
-     * @return Limit|int
+     * Limits the number of items emitted my the {@see CollectionPipe}.
+     * @param int $maxLength The number of items which shall be passed to the next pipe.
      */
-    public function maxLength(?int $value = null) {
-      if (is_null($value)) {
-        return $this->maxLength;
-      } else {
-        $this->maxLength = $value - 1;
-        return $this;
-      }
+    public function __construct(int $maxLength) {
+      $this->maxLength = $maxLength - 1;
     }
 
-//    public function minLength() {
-//
-//    }
-
     function apply(...$args) {
-      /** @var CollectionPipe $pipe */
-      $pipe = $args[2];
       $shallContinue = ++$this->i <= $this->maxLength;
       if (!$shallContinue) {
+        /** @var CollectionPipe $pipe */
+        $pipe = $args[2];
         $pipe->invalidate();
       }
       return $shallContinue;
