@@ -1,6 +1,8 @@
 <?php
 
   use Neu\Pipe7\CollectionPipe;
+  use Neu\Pipe7\StatefulOperator;
+  use Neu\Pipe7\StatefulOperatorStubs;
   use Neu\Pipe7\UnprocessableObject;
   use function Neu\Pipe7\pipe;
 
@@ -73,7 +75,9 @@
   });
 
   it('should rewind stateful operators', function () {
-    pipe([1,2,3])->filter(new class extends \Neu\Pipe7\CallableOperator {
+    pipe([1,2,3])->filter(new class implements StatefulOperator {
+      use StatefulOperatorStubs;
+
       public function apply(...$args) {
         return true;
       }

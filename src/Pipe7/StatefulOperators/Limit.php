@@ -2,11 +2,13 @@
 
   namespace Neu\Pipe7\StatefulOperators;
 
-  use Neu\Pipe7\CallableOperator;
   use Neu\Pipe7\CollectionPipe;
   use Neu\Pipe7\StatefulOperator;
+  use Neu\Pipe7\StatefulOperatorStubs;
 
-  class Limit extends CallableOperator {
+  class Limit implements StatefulOperator {
+    use StatefulOperatorStubs;
+
     /** @var int */
     private $i = 0;
     /** @var int */
