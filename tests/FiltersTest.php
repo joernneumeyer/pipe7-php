@@ -29,10 +29,21 @@
   })->throws(InvalidArgumentException::class);
 
   it('startsWith - should only return string starting with the specified string', function () {
-    $data     = ['funny', 'World', 'foo', 'bar', 'foobar', 'salut', 'mark'];
-    $expected = [0 => 'funny', 2 => 'foo', 4 => 'foobar'];
+    $data     = ['a', 'funny', 'World', 'foo', 'bar', 'foobar', 'salut', 'mark'];
+    $expected = [1 => 'funny', 3 => 'foo', 5 => 'foobar'];
     $result   = pipe($data)->filter(Filters::startsWith('f'))->toArray();
     expect($result)->toMatchArray($expected);
+  });
+
+  it('should invoke the predicate as many times, as there are elements in the source collection', function() {
+    $data = ['bar', 'foo', 'World', 'John'];
+    $counter = 0;
+    $expected = count($data);
+    pipe($data)->filter(function() use (&$counter) {
+      ++$counter;
+      return true;
+    })->toArray();
+    expect($counter)->toEqual($expected);
   });
 
   it('startsWith - should only return arrays starting with the specified element', function () {

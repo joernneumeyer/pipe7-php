@@ -82,3 +82,14 @@
     $result = pipe(['hello','world','bar'])->reduce(Reducers::join('.'), '');
     expect($result)->toEqual($expected);
   });
+
+  it('should invoke the reducer as many times, as there are elements in the source collection', function() {
+    $data = ['bar', 'foo', 'World', 'John'];
+    $counter = 0;
+    $expected = count($data);
+    pipe($data)->reduce(function($carry, $x) use (&$counter) {
+      ++$counter;
+      return $carry . $x;
+    }, '');
+    expect($counter)->toEqual($expected);
+  });
