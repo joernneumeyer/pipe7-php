@@ -36,13 +36,14 @@
   });
 
   it('should invoke the predicate as many times, as there are elements in the source collection', function() {
-    $data = ['bar', 'foo', 'World', 'John'];
+    $data = ['bar', 'fooa', 'World', 'John'];
     $counter = 0;
     $expected = count($data);
-    pipe($data)->filter(function() use (&$counter) {
+    $result = pipe($data)->filter(function($x) use (&$counter) {
       ++$counter;
-      return true;
-    })->toArray();
+      return strlen($x) > 3;
+    })->toArray(false);
+    expect($result)->toMatchArray(array_slice($data, 1));
     expect($counter)->toEqual($expected);
   });
 
