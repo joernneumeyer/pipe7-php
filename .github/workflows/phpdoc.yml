@@ -1,0 +1,36 @@
+name: PHPDoc for GitHub Pages
+
+on:
+  push:
+    branches: [ gh-pages ]
+
+jobs:
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install PHPDocumentor
+        run: |
+          wget https://phpdoc.org/phpDocumentor.phar
+          alias phpdoc="php $(pwd)/phpDocumentor.phar"
+      - name: Build docs
+        run: phpdoc
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
