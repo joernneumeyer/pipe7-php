@@ -23,7 +23,7 @@
      * @param int $maxLength The number of items which shall be passed to the next pipe.
      */
     public function __construct(int $maxLength) {
-      $this->maxLength = $maxLength - 1;
+      $this->maxLength = $maxLength;
     }
 
     function apply(...$args) {
