@@ -52,7 +52,8 @@
           return strpos($value, $needle) === 0;
         }
         else {
-          throw new \InvalidArgumentException('Cannot check if type "' . gettype($value) . '" contains a needle!');
+          $value_type = is_object($value) ? get_class($value) : gettype($value);
+          throw new \InvalidArgumentException('Cannot check if type "' . $value_type . '" contains a needle!');
         }
       };
     }
@@ -75,7 +76,8 @@
           return $valueLength - $needleLength === $needleIndex;
         }
         else {
-          throw new \InvalidArgumentException('Cannot check if type "' . gettype($value) . '" contains a needle!');
+          $value_type = is_object($value) ? get_class($value) : gettype($value);
+          throw new \InvalidArgumentException('Cannot check if type "' . $value_type . '" contains a needle!');
         }
       };
     }
