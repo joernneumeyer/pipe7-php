@@ -34,6 +34,8 @@
     private $bufferKeyIndex = -1;
     /** @var int */
     private $bufferSize = 0;
+    /** @var bool */
+    private $firstItemAfterRewind = true;
 
     private const OP_NONE   = 0;
     private const OP_MAP    = 1;
@@ -182,6 +184,12 @@
      * {@inheritdoc}
      */
     public function current() {
+      if ($this->firstItemAfterRewind) {
+        $this->firstItemAfterRewind = false;
+        if ($this->op === self::OP_FILTER) {
+          $this->next(true);
+        }
+      }
       if ($this->useIntermediateResults) {
         if (!$this->populateBuffer()) {
           return null;
@@ -204,8 +212,10 @@
     /**
      * {@inheritdoc}
      */
-    public function next() {
-      $this->sourceIterator->next();
+    public function next(bool $skipInitialNext = false) {
+      if (!$skipInitialNext) {
+        $this->sourceIterator->next();
+      }
       if ($this->op === self::OP_FILTER) {
         $predicate = $this->cbOp;
         while ($this->sourceIterator->valid() && $this->isValid && !$predicate($this->sourceIterator->current(), $this->sourceIterator->key(), $this)) {
@@ -243,8 +253,12 @@
       $this->isValid = true;
       $this->buffer = [];
       $this->bufferKeyIndex = -1;
+      $this->bufferKeys = [];
+      $this->bufferSize = 0;
       if ($this->cb instanceof StatefulOperator) {
         $this->cb->rewind();
       }
+//      $this->next(false);
+      $this->firstItemAfterRewind = true;
     }
   }
