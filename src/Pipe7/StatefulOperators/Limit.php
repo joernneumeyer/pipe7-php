@@ -6,6 +6,10 @@
   use Neu\Pipe7\StatefulOperator;
   use Neu\Pipe7\StatefulOperatorStubs;
 
+  /**
+   * Class Limit
+   * @package Neu\Pipe7\StatefulOperators
+   */
   class Limit implements StatefulOperator {
     use StatefulOperatorStubs;
 

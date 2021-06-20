@@ -17,9 +17,13 @@
   }
 
   /**
+   * A function that consumes a specified number of items from a given iterator.
+   * If no number of items is specified, a function will be returned,
+   * which accepts the number of items it shall return, until the iterator is invalid.
    * @param Iterator<mixed> $iterator
    * @param int|null $n
    * @return Closure|mixed
+   * @package Neu\Pipe7
    */
   function take(Iterator $iterator, ?int $n = null) {
     if ($n === null) {

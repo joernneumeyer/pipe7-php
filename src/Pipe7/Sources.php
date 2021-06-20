@@ -4,6 +4,10 @@
 
   use Generator;
 
+  /**
+   * Class Sources
+   * @package Neu\Pipe7
+   */
   final class Sources {
     /**
      * @return Generator<int>

@@ -3,7 +3,10 @@
 
   namespace Neu\Pipe7;
 
-
+  /**
+   * Trait StatefulOperatorStubs
+   * @package Neu\Pipe7
+   */
   trait StatefulOperatorStubs {
     /**
      * @param array<mixed> ...$args
