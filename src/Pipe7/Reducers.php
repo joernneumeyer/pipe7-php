@@ -3,6 +3,7 @@
   namespace Neu\Pipe7;
 
   use Closure;
+  use Neu\Pipe7\StatefulOperators\Average;
 
   /**
    * A collection of common reduction or special mapping operations.
@@ -11,7 +12,7 @@
   final class Reducers {
     /** @var Closure|null */
     private static $_sum;
-    /** @var Closure|null */
+    /** @var StatefulOperator|null */
     private static $_average;
     /** @var Closure|null */
     private static $_product;
@@ -35,25 +36,17 @@
       return self::$_sum;
     }
 
-    private static function addNumberToAverage(float $average, float $newElement, int $index): float {
-      return ($average * $index + $newElement) / ($index + 1);
-    }
-
     /**
      * Calculates the average of all incoming elements.
      * @param callable|null $selector A function to extract a value from the element which should currently be added to the average.
-     * @return Closure
+     * @return StatefulOperator
      */
-    public static function average(?callable $selector = null): Closure {
+    public static function average(?callable $selector = null): StatefulOperator {
       if ($selector) {
-        return function ($carry, $item, $index) use ($selector) {
-          return self::addNumberToAverage($carry, $selector($item), $index);
-        };
+        return new Average($selector);
       }
       if (!self::$_average) {
-        self::$_average = function ($carry, $item, $index) {
-          return self::addNumberToAverage($carry, $item, $index);
-        };
+        self::$_average = new Average();
       }
       return self::$_average;
     }
