@@ -10,7 +10,9 @@
   class Average implements StatefulOperator {
     use StatefulOperatorStubs;
 
+    /** @var int */
     private $numberOfItems = 0;
+    /** @var callable|null */
     private $selector;
 
     public function __construct(?callable $selector = null) {
