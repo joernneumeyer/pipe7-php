@@ -13,17 +13,22 @@
   class Zip implements StatefulOperator {
     use StatefulOperatorStubs;
 
-    /** @var Iterator */
+    /** @var Iterator<mixed> */
     private $zipSource;
 
     /**
      * Zip constructor.
-     * @param Iterator $iterator
+     * @param Iterator<mixed> $iterator
      */
     public function __construct(Iterator $iterator) {
       $this->zipSource = $iterator;
     }
 
+    /**
+     * @param mixed ...$args
+     * @return array<mixed>
+     * @throws \Exception
+     */
     public function apply(...$args) {
       if (!$this->zipSource->valid()) {
         throw new \Exception("Zip iterator is already invalid!");

@@ -28,7 +28,7 @@
     /**
      * Joins elements coming from the previous pipe with elements coming from the supplied iterator.
      * The items from the pipe source will be located at index 0, and the items from the zip source will be located at index 1.
-     * @param Iterator $iterator
+     * @param Iterator<mixed> $iterator
      * @return StatefulOperator
      */
     public static function zip(Iterator $iterator): StatefulOperator {
