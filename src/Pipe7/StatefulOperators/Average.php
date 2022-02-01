@@ -1,12 +1,14 @@
 <?php
 
-
   namespace Neu\Pipe7\StatefulOperators;
-
 
   use Neu\Pipe7\StatefulOperator;
   use Neu\Pipe7\StatefulOperatorStubs;
 
+  /**
+   * Class Average
+   * @package Neu\Pipe7\StatefulOperators
+   */
   class Average implements StatefulOperator {
     use StatefulOperatorStubs;
 

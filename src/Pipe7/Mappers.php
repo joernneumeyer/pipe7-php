@@ -3,6 +3,8 @@
   namespace Neu\Pipe7;
 
   use Closure;
+  use Iterator;
+  use Neu\Pipe7\StatefulOperators\Zip;
 
   /**
    * A collection of helpers for common data mapping operations.
@@ -21,5 +23,15 @@
         self::$_toString = function($x) { return (string)$x; };
       }
       return self::$_toString;
+    }
+
+    /**
+     * Joins elements coming from the previous pipe with elements coming from the supplied iterator.
+     * The items from the pipe source will be located at index 0, and the items from the zip source will be located at index 1.
+     * @param Iterator<mixed> $iterator
+     * @return StatefulOperator
+     */
+    public static function zip(Iterator $iterator): StatefulOperator {
+      return new Zip($iterator);
     }
   }
