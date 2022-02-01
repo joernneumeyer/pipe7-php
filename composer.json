@@ -27,5 +27,9 @@
   "require-dev": {
     "pestphp/pest": "^1.0",
     "phpstan/phpstan": "^0.12.88"
+  },
+  "require": {
+    "symfony/polyfill-php80": "^1.23",
+    "php": ">=7.3"
   }
 }

@@ -1,6 +1,7 @@
 <?php
 
   use Neu\Pipe7\CollectionPipe;
+  use Neu\Pipe7\InvalidOperator;
   use Neu\Pipe7\StatefulOperator;
   use Neu\Pipe7\StatefulOperatorStubs;
   use Neu\Pipe7\UnprocessableObject;
@@ -75,7 +76,8 @@
   });
 
   it('should rewind stateful operators', function () {
-    pipe([1,2,3])->filter(new class implements StatefulOperator {
+
+    pipe([1, 2, 3])->filter(new class implements StatefulOperator {
       use StatefulOperatorStubs;
 
       public function apply(...$args) {
@@ -88,14 +90,23 @@
     })->toArray();
   });
 
-  it('should throw, if an invalid operator has been supplied', function() {
+  it('should map keys properly', function () {
+    $res = pipe([3, 4, 5])->mapKeys(function($k, $v) {return $k + $v; })->toArray();
+    expect($res)->toMatchArray([3 => 3, 5 => 4, 7 => 5]);
+  });
+
+  it('should throw, if an invalid operator has been supplied', function () {
     /** @phpstan-ignore-next-line */
-    pipe([1,2,3])->filter(4);
+    pipe([1, 2, 3])->filter(4);
   })->throws(Exception::class);
 
-  it('should be re-iterable and buffer data properly', function() {
-    $p = pipe([1,2,3,4])->enableIntermediateResults();
+  it('should be re-iterable and buffer data properly', function () {
+    $p    = pipe([1, 2, 3, 4])->enableIntermediateResults();
     $arr1 = iterator_to_array($p);
     $arr2 = iterator_to_array($p);
     expect($arr1)->toMatchArray($arr2);
   });
+
+  it('map - should throw on invalid operator', function () {
+    pipe([])->map(new stdClass());
+  })->throws(InvalidOperator::class);

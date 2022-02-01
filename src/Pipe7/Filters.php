@@ -4,6 +4,7 @@
 
   use Closure;
   use Neu\Pipe7\StatefulOperators\Limit;
+  use Neu\Pipe7\StatefulOperators\Skip;
 
   /**
    * A collection of filtering operations, used to limit the number of elements in the next processing step.
@@ -18,6 +19,14 @@
      */
     public static function limit(int $count): Limit {
       return new Limit($count);
+    }
+
+    /**
+     * @param int $count
+     * @return Skip
+     */
+    public static function skip(int $count): Skip {
+      return new Skip($count);
     }
 
     /**

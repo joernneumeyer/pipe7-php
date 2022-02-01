@@ -77,3 +77,12 @@
     $data = [100, 324, 678];
     pipe($data)->filter(Filters::endsWith(1))->toArray();
   })->throws(InvalidArgumentException::class);
+
+  test('skip - skips the first 3 elements', function() {
+    $result = pipe([1,2,3,4,5])->filter(Filters::skip(3))->toArray();
+    expect($result)->toMatchArray([3 => 4, 4 => 5]);
+  });
+
+  test('skip - throws if a number less than 1 is provided', function() {
+    Filters::skip(0);
+  })->throws(InvalidArgumentException::class);

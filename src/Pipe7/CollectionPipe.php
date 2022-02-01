@@ -22,7 +22,7 @@
     private $op;
     /** @var Closure|StatefulOperator|null */
     private $cb;
-    /** @var Closure|StatefulOperator  */
+    /** @var Closure|StatefulOperator */
     private $cbOp;
     /** @var bool */
     private $isValid = true;
@@ -37,16 +37,16 @@
     /** @var bool */
     private $firstItemAfterRewind = true;
 
-    private const OP_NONE   = 0;
-    private const OP_MAP    = 1;
-    private const OP_FILTER = 2;
+    private const OP_NONE    = 0;
+    private const OP_MAP     = 1;
+    private const OP_FILTER  = 2;
+    private const OP_MAP_KEY = 3;
 
     /**
      * CollectionPipe constructor.
      * @param Iterator<mixed>|array<mixed> $collection
      * @param int $op
      * @param StatefulOperator|Closure|null $cb
-     * @throws UnprocessableObject
      */
     private function __construct($collection, int $op = self::OP_NONE, $cb = null) {
       if (is_array($collection)) {
@@ -84,7 +84,6 @@
      * $transformer signature: fn(mixed $currentItem, mixed $currentKey, CollectionPipe $pipeInstance) => mixed
      * @param StatefulOperator|Closure $transformer The transforming function to apply to each element.
      * @return CollectionPipe
-     * @throws UnprocessableObject
      */
     public function map($transformer): CollectionPipe {
       self::isValidOperator($transformer);
@@ -97,11 +96,22 @@
      * $predicate signature: fn(mixed $currentItem, mixed $currentKey, CollectionPipe $pipeInstance) => bool
      * @param StatefulOperator|Closure $predicate The predicate to apply to an element, to check if it should be used.
      * @return CollectionPipe
-     * @throws UnprocessableObject
      */
     public function filter($predicate): CollectionPipe {
       self::isValidOperator($predicate);
       return new CollectionPipe($this, self::OP_FILTER, $predicate);
+    }
+
+    /**
+     * Creates a new CollectionPipe, which transforms each key with the supplied mapper, when it is traversed.
+     *
+     * $transformer signature: fn(mixed $currentKey, mixed $currentItem, CollectionPipe $pipeInstance) => mixed
+     * @param StatefulOperator|Closure $transformer The transforming function to apply to each element.
+     * @return CollectionPipe
+     */
+    public function mapKeys($transformer): CollectionPipe {
+      self::isValidOperator($transformer);
+      return new CollectionPipe($this, self::OP_MAP_KEY, $transformer);
     }
 
     /**
@@ -110,7 +120,6 @@
      * @param mixed|null $initial
      * @param bool $returnAsPipe If {$returnAsPipe} is set to true, and the reduced value is a valid data source, this method returns a new CollectionPipe for the reduced value.
      * @return mixed|CollectionPipe
-     * @throws UnprocessableObject
      */
     public function reduce($reducer, $initial = null, bool $returnAsPipe = false) {
       self::isValidOperator($reducer);
@@ -139,11 +148,10 @@
 
     /**
      * @param mixed $op
-     * @throws Exception
      */
     private static function isValidOperator($op): void {
       if (!(is_callable($op) || $op instanceof StatefulOperator)) {
-        throw new \Exception('Invalid operator supplied! Make sure to pass either a \'callable\' or an instance of \'' . StatefulOperator::class . '\'!');
+        throw new InvalidOperator('Invalid operator supplied! Make sure to pass either a \'callable\' or an instance of \'' . StatefulOperator::class . '\'!');
       }
     }
 
@@ -151,7 +159,6 @@
      * Factory method to create new CollectionPipe instances.
      * @param array<mixed>|Iterator<mixed> $collection The data source.
      * @return CollectionPipe
-     * @throws UnprocessableObject
      */
     public static function from($collection): CollectionPipe {
       return new CollectionPipe($collection);
@@ -169,8 +176,8 @@
             $this->buffer[$this->sourceIterator->key()] = $this->sourceIterator->current();
             $this->sourceIterator->next();
           }
-          $this->bufferKeys = array_keys($this->buffer);
-          $this->bufferSize = count($this->buffer);
+          $this->bufferKeys     = array_keys($this->buffer);
+          $this->bufferSize     = count($this->buffer);
           $this->bufferKeyIndex = -1;
         }
 //        else {
@@ -194,11 +201,11 @@
         if (!$this->populateBuffer()) {
           return null;
         }
-        $key = $this->bufferKeys[++$this->bufferKeyIndex];
+        $key   = $this->bufferKeys[++$this->bufferKeyIndex];
         $value = $this->buffer[$key];
       } else {
         $value = $this->sourceIterator->current();
-        $key = $this->sourceIterator->key();
+        $key   = $this->sourceIterator->key();
       }
 
       switch ($this->op) {
@@ -228,6 +235,9 @@
      * {@inheritdoc}
      */
     public function key() {
+      if ($this->op === self::OP_MAP_KEY) {
+        return ($this->cbOp)($this->sourceIterator->key(), $this->current(), $this);
+      }
       return $this->sourceIterator->key();
     }
 
@@ -235,9 +245,9 @@
      * {@inheritdoc}
      */
     public function valid() {
-      $dataAvailable = $this->sourceIterator->valid() || $this->buffer !== [];
+      $dataAvailable     = $this->sourceIterator->valid() || $this->buffer !== [];
       $bufferNotExceeded = $this->bufferKeyIndex < $this->bufferSize - 1;
-      $iteratorIsValid = $dataAvailable && $this->isValid;
+      $iteratorIsValid   = $dataAvailable && $this->isValid;
       if ($this->bufferSize > 0) {
         return $iteratorIsValid && $bufferNotExceeded;
       } else {
@@ -250,11 +260,11 @@
      */
     public function rewind() {
       $this->sourceIterator->rewind();
-      $this->isValid = true;
-      $this->buffer = [];
+      $this->isValid        = true;
+      $this->buffer         = [];
       $this->bufferKeyIndex = -1;
-      $this->bufferKeys = [];
-      $this->bufferSize = 0;
+      $this->bufferKeys     = [];
+      $this->bufferSize     = 0;
       if ($this->cb instanceof StatefulOperator) {
         $this->cb->rewind();
       }
