@@ -108,5 +108,6 @@
   });
 
   it('map - should throw on invalid operator', function () {
+    /** @phpstan-ignore-next-line */
     pipe([])->map(new stdClass());
   })->throws(InvalidOperator::class);
