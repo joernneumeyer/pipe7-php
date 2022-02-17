@@ -37,9 +37,9 @@
     }
 
     /**
-     * Returns the current element.
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current() {
       return $this->source[$this->keys[$this->keysIndex]];
     }
@@ -55,6 +55,7 @@
      * Returns the current key.
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key() {
       if ($this->options & self::PRESERVE_KEYS) {
         return $this->keys[$this->keysIndex];

@@ -5,6 +5,7 @@
   use Closure;
   use Iterator;
   use Exception;
+  use Traversable;
 
   /**
    * An iterable data processing unit.
@@ -44,7 +45,7 @@
 
     /**
      * CollectionPipe constructor.
-     * @param Iterator<mixed>|array<mixed> $collection
+     * @param Traversable<mixed>|array<mixed> $collection
      * @param int $op
      * @param StatefulOperator|Closure|null $cb
      */
@@ -52,6 +53,13 @@
       if (is_array($collection)) {
         $this->sourceIterator = new \ArrayIterator($collection);
       } else {
+        if ($collection instanceof \IteratorAggregate) {
+          try {
+            $collection = $collection->getIterator();
+          } catch (\Throwable $e) {
+            throw new UnprocessableObject($e->getMessage(), $e->getCode(), $e);
+          }
+        }
         if (is_a($collection, Iterator::class)) {
           $this->sourceIterator = $collection;
         } else {
@@ -190,6 +198,7 @@
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function current() {
       if ($this->firstItemAfterRewind) {
         $this->firstItemAfterRewind = false;
@@ -219,7 +228,7 @@
     /**
      * {@inheritdoc}
      */
-    public function next(bool $skipInitialNext = false) {
+    public function next(bool $skipInitialNext = false): void {
       if (!$skipInitialNext) {
         $this->sourceIterator->next();
       }
@@ -234,6 +243,7 @@
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function key() {
       if ($this->op === self::OP_MAP_KEY) {
         return ($this->cbOp)($this->sourceIterator->key(), $this->current(), $this);
@@ -244,7 +254,7 @@
     /**
      * {@inheritdoc}
      */
-    public function valid() {
+    public function valid(): bool {
       $dataAvailable     = $this->sourceIterator->valid() || $this->buffer !== [];
       $bufferNotExceeded = $this->bufferKeyIndex < $this->bufferSize - 1;
       $iteratorIsValid   = $dataAvailable && $this->isValid;

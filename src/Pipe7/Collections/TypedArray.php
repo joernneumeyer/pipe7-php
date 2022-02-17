@@ -8,13 +8,17 @@
   use ArrayIterator;
   use Countable;
   use Iterator;
+  use IteratorAggregate;
   use Neu\Pipe7\GeneralConstants;
 
   /**
    * Class TypedArray
    * @package Neu\Pipe7\Collections
+   * @template T
+   * @implements ArrayAccess<int, T>
+   * @implements IteratorAggregate<int, T>
    */
-  class TypedArray implements ArrayAccess, \IteratorAggregate, Countable {
+  class TypedArray implements ArrayAccess, IteratorAggregate, Countable {
     use DefaultArrayAccessImplementations;
 
     /** @var string $type */
@@ -27,12 +31,16 @@
       $this->type = $type;
     }
 
+    /**
+     * @param string $type
+     * @return TypedArray<T>
+     */
     public static function forType(string $type): TypedArray {
       return new TypedArray($type);
     }
 
     /**
-     * @param string|int $offset
+     * @param string|int|null $offset
      * @param mixed $value
      */
     public function offsetSet($offset, $value): void {
@@ -60,10 +68,17 @@
       return $this->type;
     }
 
+    /**
+     * @return Iterator<T>
+     */
     public function getIterator(): Iterator {
       return new ArrayIterator($this->data);
     }
 
+    /**
+     * Retrieve the underlying array.
+     * @return array<T>
+     */
     function unwrapped() {
       return $this->data;
     }

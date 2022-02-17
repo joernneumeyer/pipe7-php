@@ -6,7 +6,9 @@
   use Neu\Pipe7\StatefulOperator;
 
   class Skip implements StatefulOperator {
+    /** @var int */
     private $nrOfItemsChecked = 0;
+    /** @var int */
     private $nrOfItemsToSkip;
 
     public function __construct(int $nrOfItemsToSkip) {

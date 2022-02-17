@@ -8,7 +8,7 @@
    * @template T
    */
   trait DefaultArrayAccessImplementations {
-    /** @var array<T> $data */
+    /** @var array<string|int, T> $data */
     protected $data = [];
 
     /**
@@ -23,12 +23,13 @@
      * @param string|int $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset) {
       return $this->data[$offset];
     }
 
     /**
-     * @param string|int $offset
+     * @param string|int|null $offset
      * @param mixed $value
      */
     public function offsetSet($offset, $value): void {

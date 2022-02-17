@@ -1,6 +1,15 @@
 <?php
+
+  use Neu\Pipe7\Collections\DefaultArrayAccessImplementations;
+
+  /**
+   * @implements ArrayAccess<mixed, mixed>
+   */
   class CollectionWithArrayAccess implements ArrayAccess, Countable {
-    use \Neu\Pipe7\Collections\DefaultArrayAccessImplementations;
+    use DefaultArrayAccessImplementations;
+    /**
+     * @var mixed[] $data
+     */
   }
 
   it('works', function() {
