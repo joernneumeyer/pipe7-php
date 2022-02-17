@@ -258,7 +258,7 @@
     /**
      * {@inheritdoc}
      */
-    public function rewind() {
+    public function rewind(): void {
       $this->sourceIterator->rewind();
       $this->isValid        = true;
       $this->buffer         = [];
