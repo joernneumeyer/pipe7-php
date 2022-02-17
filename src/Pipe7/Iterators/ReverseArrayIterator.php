@@ -47,13 +47,13 @@
     /**
      * Moves the internal pointer to the next element.
      */
-    public function next() {
+    public function next(): void {
       --$this->keysIndex;
     }
 
     /**
      * Returns the current key.
-     * @return string|int
+     * @return mixed
      */
     public function key() {
       if ($this->options & self::PRESERVE_KEYS) {
@@ -67,14 +67,14 @@
      * Returns the iterators validity.
      * @return bool
      */
-    public function valid() {
+    public function valid(): bool {
       return $this->keysIndex >= 0;
     }
 
     /**
      * Resets the iterator.
      */
-    public function rewind() {
+    public function rewind(): void {
       $this->keysIndex = $this->length - 1;
     }
   }
