@@ -2,14 +2,6 @@
 
   use Neu\Pipe7\Iterators\ReverseArrayIterator;
 
-  function pr($v) {
-    $ob = ob_get_contents();
-    ob_end_clean();
-    echo $v;
-    ob_start();
-    echo $ob;
-  }
-
   $sampleTestSet = [
     [
       [1, 2, 3],
