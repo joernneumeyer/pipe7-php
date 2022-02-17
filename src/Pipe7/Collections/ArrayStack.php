@@ -16,6 +16,10 @@
     /** @var int */
     protected $size = 0;
 
+    public function data(): array {
+      return $this->data;
+    }
+
     public function getIterator(): \Iterator {
       return new ArrayIterator($this->data);
     }

@@ -18,6 +18,10 @@
     /** @var int */
     protected $count = 0;
 
+    public function data(): array {
+      return $this->data;
+    }
+
     public function getIterator(): Iterator {
       return new SequentialKeyArrayIterator($this->data);
     }
