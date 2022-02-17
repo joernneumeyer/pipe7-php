@@ -4,8 +4,11 @@
   namespace Neu\Pipe7\Collections;
 
 
+  /**
+   * @template T
+   */
   trait DefaultArrayAccessImplementations {
-    /** @var array $data */
+    /** @var array<T> $data */
     protected $data = [];
 
     /**
