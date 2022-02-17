@@ -3,6 +3,7 @@
   use Neu\Pipe7\Collections\TypedArray;
 
   class SimpleEntity {
+    /** @var string */
     public $name;
 
     function __construct(string $name) {
@@ -11,6 +12,7 @@
   }
 
   class OtherEntity {
+    /** @var int */
     public $age;
 
     function __construct(int $age) {
