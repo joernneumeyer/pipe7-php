@@ -281,4 +281,10 @@
 //      $this->next(false);
       $this->firstItemAfterRewind = true;
     }
+
+    public function forEach(Closure $cb) {
+      foreach ($this as $t) {
+        ($cb)($t);
+      }
+    }
   }

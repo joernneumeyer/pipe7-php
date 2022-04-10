@@ -111,3 +111,11 @@
     /** @phpstan-ignore-next-line */
     pipe([])->map(new stdClass());
   })->throws(InvalidOperator::class);
+
+  it('should iterate over each element', function() {
+    $expected = [1,2,3];
+
+    pipe([1,2,3])->forEach(function($e) use (&$expected) {
+      expect($e)->toEqual(array_splice($expected, 0, 1)[0]);
+    });
+  });
