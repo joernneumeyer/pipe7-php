@@ -282,6 +282,11 @@
       $this->firstItemAfterRewind = true;
     }
 
+    /**
+     * Iterate over each element and apply the callback.
+     * @param Closure $cb The function to apply.
+     * @return void
+     */
     public function forEach(Closure $cb) {
       foreach ($this as $t) {
         ($cb)($t);
