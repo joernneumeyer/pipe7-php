@@ -6,6 +6,7 @@
   use IteratorAggregate;
 
   /**
+   * @package Neu\Pipe7\Collections
    * @template T
    */
   interface Queue extends Countable, IteratorAggregate {

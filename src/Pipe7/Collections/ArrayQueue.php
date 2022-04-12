@@ -7,6 +7,7 @@
   use Neu\Pipe7\Iterators\SequentialKeyArrayIterator;
 
   /**
+   * @package Neu\Pipe7\Collections
    * @template T
    * @implements Queue<T>
    */

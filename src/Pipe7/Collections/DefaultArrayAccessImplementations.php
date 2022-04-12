@@ -6,6 +6,7 @@
 
   /**
    * @template T
+   * @package Neu\Pipe7\Collections
    */
   trait DefaultArrayAccessImplementations {
     /** @var array<string|int, T> $data */

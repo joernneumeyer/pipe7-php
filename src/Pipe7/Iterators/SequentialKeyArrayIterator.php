@@ -2,7 +2,12 @@
 
   namespace Neu\Pipe7\Iterators;
 
-  class SequentialKeyArrayIterator extends \ArrayIterator {
+  use ArrayIterator;
+
+  /**
+   * @package Neu\Pipe7\Collections
+   */
+  class SequentialKeyArrayIterator extends ArrayIterator {
     /** @var int */
     private $currentIndex = 0;
 

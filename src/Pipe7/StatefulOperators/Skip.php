@@ -5,6 +5,9 @@
   use InvalidArgumentException;
   use Neu\Pipe7\StatefulOperator;
 
+  /**
+   * @package Neu\Pipe7\StatefulOperators
+   */
   class Skip implements StatefulOperator {
     /** @var int */
     private $nrOfItemsChecked = 0;

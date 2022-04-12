@@ -5,6 +5,7 @@
   use ArrayIterator;
 
   /**
+   * @package Neu\Pipe7\Collections
    * @template T
    * @implements Stack<T>
    */
