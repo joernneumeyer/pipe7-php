@@ -18,6 +18,9 @@
      */
     private $end;
 
+    /**
+     * @var int
+     */
     private $currentIndex = 0;
 
     public function __construct(int $offset, int $end) {
