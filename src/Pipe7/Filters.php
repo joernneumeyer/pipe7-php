@@ -92,7 +92,13 @@
       };
     }
 
-    public static function slice(int $offset, int $end) {
+    /**
+     * Slice incoming data.
+     * @param int $offset Inclusive offset.
+     * @param int $end Inclusive end.
+     * @return Slice
+     */
+    public static function slice(int $offset, int $end): Slice {
       return new Slice($offset, $end);
     }
   }

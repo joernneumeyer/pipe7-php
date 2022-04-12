@@ -4,6 +4,9 @@
 
   use Neu\Pipe7\StatefulOperator;
 
+  /**
+   * @package Neu\Pipe7\StatefulOperators
+   */
   class Slice implements StatefulOperator {
     /**
      * @var int
