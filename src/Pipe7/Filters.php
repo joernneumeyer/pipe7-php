@@ -5,6 +5,7 @@
   use Closure;
   use Neu\Pipe7\StatefulOperators\Limit;
   use Neu\Pipe7\StatefulOperators\Skip;
+  use Neu\Pipe7\StatefulOperators\Slice;
 
   /**
    * A collection of filtering operations, used to limit the number of elements in the next processing step.
@@ -89,5 +90,9 @@
           throw new \InvalidArgumentException('Cannot check if type "' . $value_type . '" contains a needle!');
         }
       };
+    }
+
+    public static function slice(int $offset, int $end) {
+      return new Slice($offset, $end);
     }
   }
