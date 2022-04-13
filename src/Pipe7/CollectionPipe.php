@@ -15,8 +15,6 @@
   class CollectionPipe implements Iterator {
     private const CHUNK_SIZE = 10000;
 
-    /** @var bool */
-    private $useIntermediateResults = false;
     /** @var Iterator<mixed> */
     private $sourceIterator;
     /** @var int */
@@ -76,14 +74,6 @@
           $this->cbOp = $cb;
         }
       }
-    }
-
-    /**
-     * @return $this
-     */
-    public function enableIntermediateResults(): CollectionPipe {
-      $this->useIntermediateResults = true;
-      return $this;
     }
 
     /**
@@ -206,16 +196,8 @@
           $this->next(true);
         }
       }
-      if ($this->useIntermediateResults) {
-        if (!$this->populateBuffer()) {
-          return null;
-        }
-        $key   = $this->bufferKeys[++$this->bufferKeyIndex];
-        $value = $this->buffer[$key];
-      } else {
-        $value = $this->sourceIterator->current();
-        $key   = $this->sourceIterator->key();
-      }
+      $value = $this->sourceIterator->current();
+      $key   = $this->sourceIterator->key();
 
       switch ($this->op) {
         case self::OP_MAP:
