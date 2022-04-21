@@ -270,8 +270,8 @@
      * @return void
      */
     public function forEach(Closure $cb) {
-      foreach ($this as $t) {
-        ($cb)($t);
+      foreach ($this as $k => $v) {
+        ($cb)($v, $k);
       }
     }
   }
