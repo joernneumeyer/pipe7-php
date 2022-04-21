@@ -220,10 +220,6 @@
     public function rewind(): void {
       $this->sourceIterator->rewind();
       $this->isValid        = true;
-      $this->buffer         = [];
-      $this->bufferKeyIndex = -1;
-      $this->bufferKeys     = [];
-      $this->bufferSize     = 0;
       if ($this->cb instanceof StatefulOperator) {
         $this->cb->rewind();
       }
