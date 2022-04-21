@@ -112,3 +112,22 @@
       expect($e)->toEqual(array_splice($expected, 0, 1)[0]);
     });
   });
+
+  it('should work with an iterator aggregate', function() {
+    $a = new class implements IteratorAggregate {
+      public function getIterator(): ArrayIterator {
+        return new ArrayIterator([2,4,6]);
+      }
+    };
+    $result = pipe($a)->toArray();
+    expect($result)->toMatchArray([2,4,6]);
+  });
+
+  it('should throw with an invalid iterator aggregate', function() {
+    $a = new class implements IteratorAggregate {
+      public function getIterator() {
+        throw new Exception();
+      }
+    };
+    expect(function () use ($a) { pipe($a); })->toThrow(UnprocessableObject::class);
+  });
