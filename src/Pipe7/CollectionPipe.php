@@ -25,14 +25,6 @@
     private $cbOp;
     /** @var bool */
     private $isValid = true;
-    /** @var array<mixed> */
-    private $buffer = [];
-    /** @var array<string> */
-    private $bufferKeys = [];
-    /** @var int */
-    private $bufferKeyIndex = -1;
-    /** @var int */
-    private $bufferSize = 0;
     /** @var bool */
     private $firstItemAfterRewind = true;
 
@@ -166,25 +158,6 @@
       $this->isValid = false;
     }
 
-    private function populateBuffer(): bool {
-      if ($this->buffer === [] || $this->bufferKeyIndex >= $this->bufferSize) {
-        if ($this->sourceIterator->valid()) {
-          $this->bufferKeyIndex = 0;
-          for ($i = 0; $i < self::CHUNK_SIZE && $this->sourceIterator->valid(); ++$i) {
-            $this->buffer[$this->sourceIterator->key()] = $this->sourceIterator->current();
-            $this->sourceIterator->next();
-          }
-          $this->bufferKeys     = array_keys($this->buffer);
-          $this->bufferSize     = count($this->buffer);
-          $this->bufferKeyIndex = -1;
-        }
-//        else {
-//          throw new \Exception('foobar');
-//        }
-      }
-      return $this->buffer !== [];
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -237,14 +210,8 @@
      * {@inheritdoc}
      */
     public function valid(): bool {
-      $dataAvailable     = $this->sourceIterator->valid() || $this->buffer !== [];
-      $bufferNotExceeded = $this->bufferKeyIndex < $this->bufferSize - 1;
-      $iteratorIsValid   = $dataAvailable && $this->isValid;
-      if ($this->bufferSize > 0) {
-        return $iteratorIsValid && $bufferNotExceeded;
-      } else {
-        return $iteratorIsValid;
-      }
+      $dataAvailable     = $this->sourceIterator->valid();
+      return $dataAvailable && $this->isValid;
     }
 
     /**
