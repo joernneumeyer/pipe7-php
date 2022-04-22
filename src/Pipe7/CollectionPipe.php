@@ -62,8 +62,10 @@
         self::isValidOperator($cb);
         if ($cb instanceof StatefulOperator) {
           $this->cbOp = Closure::fromCallable([$cb, 'apply']);
-        } else {
+        } else if ($cb instanceof Closure) {
           $this->cbOp = $cb;
+        } else {
+          $this->cbOp = Closure::fromCallable($cb);
         }
       }
     }
@@ -72,7 +74,7 @@
      * Creates a new CollectionPipe, which transforms each element with the supplied mapper, when it is traversed.
      *
      * $transformer signature: fn(mixed $currentItem, mixed $currentKey, CollectionPipe $pipeInstance) => mixed
-     * @param StatefulOperator|Closure $transformer The transforming function to apply to each element.
+     * @param StatefulOperator|callable $transformer The transforming function to apply to each element.
      * @return CollectionPipe
      */
     public function map($transformer): CollectionPipe {
@@ -84,7 +86,7 @@
      * Creates a new CollectionPipe, which filters the elements available during traversal, based on the result of the supplied {@see $predicate}.
      *
      * $predicate signature: fn(mixed $currentItem, mixed $currentKey, CollectionPipe $pipeInstance) => bool
-     * @param StatefulOperator|Closure $predicate The predicate to apply to an element, to check if it should be used.
+     * @param StatefulOperator|callable $predicate The predicate to apply to an element, to check if it should be used.
      * @return CollectionPipe
      */
     public function filter($predicate): CollectionPipe {
@@ -96,7 +98,7 @@
      * Creates a new CollectionPipe, which transforms each key with the supplied mapper, when it is traversed.
      *
      * $transformer signature: fn(mixed $currentKey, mixed $currentItem, CollectionPipe $pipeInstance) => mixed
-     * @param StatefulOperator|Closure $transformer The transforming function to apply to each element.
+     * @param StatefulOperator|callable $transformer The transforming function to apply to each element.
      * @return CollectionPipe
      */
     public function mapKeys($transformer): CollectionPipe {

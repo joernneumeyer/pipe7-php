@@ -9,6 +9,10 @@
 
   $data = require 'testData.php';
 
+  function addTwo(int $val) {
+    return $val + 2;
+  }
+
   it('should map properly', function () use ($data) {
     $ages = CollectionPipe::from($data)->map(function ($x) {
       return $x->getAge();
@@ -130,4 +134,9 @@
       }
     };
     expect(function () use ($a) { pipe($a); })->toThrow(UnprocessableObject::class);
+  });
+
+  it('should convert a callable to a Closure', function () {
+    $result = pipe([1,2,3])->map('addTwo')->toArray();
+    expect($result)->toMatchArray([3,4,5]);
   });
