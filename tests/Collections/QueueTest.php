@@ -1,10 +1,10 @@
 <?php
 
 
-  use Neu\Pipe7\Collections\Stack;
+  use Neu\Pipe7\Collections\ArrayQueue;
 
   $classesToTest = [
-    \Neu\Pipe7\Collections\ArrayQueue::class
+    ArrayQueue::class
   ];
 
 //  it('should add elements in proper order', function($stackName) {
@@ -31,3 +31,17 @@
     expect($queue)->toHaveCount(4);
     expect(iterator_to_array($queue->getIterator()))->toMatchArray([9, 'world', 42, 'Hello']);
   })->with($classesToTest);
+
+  it('should return the underlying array', function() {
+    $q = new ArrayQueue();
+    $q->put(4);
+    $q->put('hello');
+    expect($q->data())->toMatchArray([4, 'hello']);
+  });
+
+  it('should throw, if you want to pop an empty array queue', function () {
+    expect(function() {
+      $q = new ArrayQueue();
+      $q->pop();
+    })->toThrow(RuntimeException::class);
+  });
