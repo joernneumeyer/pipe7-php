@@ -3,6 +3,8 @@
   namespace Neu\Pipe7;
 
   use Generator;
+  use Iterator;
+  use Neu\Pipe7\Source\Combine;
 
   /**
    * Class Sources
@@ -42,5 +44,13 @@
       for ($i = $offset; $i < $n; $i += $step) {
         yield $i;
       }
+    }
+
+    /**
+     * @param array<Iterator> $sources
+     * @return Combine
+     */
+    public static function combine(array $sources): Combine {
+      return new Combine($sources);
     }
   }
