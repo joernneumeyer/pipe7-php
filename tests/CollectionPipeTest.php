@@ -9,7 +9,7 @@
 
   $data = require 'testData.php';
 
-  function addTwo(int $val) {
+  function addTwo(int $val): int {
     return $val + 2;
   }
 
@@ -105,7 +105,6 @@
   })->throws(Exception::class);
 
   it('map - should throw on invalid operator', function () {
-    /** @phpstan-ignore-next-line */
     pipe([])->map(new stdClass());
   })->throws(InvalidOperator::class);
 

@@ -37,7 +37,7 @@
      * CollectionPipe constructor.
      * @param Traversable<mixed>|array<mixed> $collection
      * @param int $op
-     * @param StatefulOperator|Closure|null $cb
+     * @param StatefulOperator|callable|null $cb
      */
     private function __construct($collection, int $op = self::OP_NONE, $cb = null) {
       if (is_array($collection)) {
