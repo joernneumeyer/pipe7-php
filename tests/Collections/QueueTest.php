@@ -2,18 +2,14 @@
 
 
   use Neu\Pipe7\Collections\ArrayQueue;
+  use Neu\Pipe7\Collections\Queue;
 
   $classesToTest = [
     ArrayQueue::class
   ];
 
-//  it('should add elements in proper order', function($stackName) {
-//    /** @var Stack $stack */
-//    $stack = new $stackName();
-//  })->with($classesToTest);
-
   it('should work like a queue', function ($queueName) {
-    /** @var \Neu\Pipe7\Collections\Queue $queue */
+    /** @var Queue $queue */
     $queue = new $queueName();
     $queue->put(2);
     $queue->put(6);
