@@ -5,6 +5,7 @@
   use Generator;
   use Iterator;
   use Neu\Pipe7\Source\Combine;
+  use Neu\Pipe7\Source\CombineNull;
 
   /**
    * Class Sources
@@ -47,10 +48,23 @@
     }
 
     /**
+     * Combines multiple Iterators into a new one.
+     * The resulting Iterator is invalid, as soon as the first source Iterator is invalid.
      * @param array<Iterator> $sources
      * @return Combine
      */
     public static function combine(array $sources): Combine {
       return new Combine($sources);
+    }
+
+    /**
+     * Combines multiple Iterators into a new one.
+     * The resulting Iterator is invalid, as soon as all source Iterators are invalid.
+     * Values for invalid source Iterators will be filled with null.
+     * @param array $sources
+     * @return CombineNull
+     */
+    public static function combineNull(array $sources): CombineNull {
+      return new CombineNull($sources);
     }
   }

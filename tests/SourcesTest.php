@@ -34,3 +34,31 @@
     $result   = iterator_to_array($combined);
     expect($result)->toMatchArray($expected);
   });
+
+
+
+  it('should combine properly when even', function () {
+    $a        = new ArrayIterator([1, 2, 3]);
+    $b        = new ArrayIterator([2, 3, 4]);
+    $expected = [[1, 2], [2, 3], [3, 4]];
+    $combined = Sources::combineNull([$a, $b]);
+    $result   = iterator_to_array($combined);
+    expect($result)->toMatchArray($expected);
+  });
+
+  it('should throw, if an invalid sources array is provided with null variant', function () {
+    $a = new ArrayIterator([1, 2, 3]);
+    $b = 24;
+    expect(function () use ($a, $b) {
+      Sources::combineNull([$a, $b]);
+    })->toThrow(InvalidArgumentException::class);
+  });
+
+  it('should fill as soon as the first source is invalid', function () {
+    $a        = new ArrayIterator(['hello', 2, 3]);
+    $b        = new ArrayIterator([2, 'world', 4, 'foo']);
+    $expected = [['hello', 2], [2, 'world'], [3, 4], [null, 'foo']];
+    $combined = Sources::combineNull([$a, $b]);
+    $result   = iterator_to_array($combined);
+    expect($result)->toMatchArray($expected);
+  });
