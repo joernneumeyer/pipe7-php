@@ -4,9 +4,20 @@
 
   use Iterator;
 
+  /**
+   * @package Neu\Source
+   */
   class CombineNull implements Iterator {
+    /**
+     * @var Iterator[]
+     */
     private $sources;
+
+    /**
+     * @var int
+     */
     private $key = 0;
+
     /**
      * @param array<Iterator> $sources
      */
@@ -31,7 +42,7 @@
       return $current;
     }
 
-    public function next() {
+    public function next(): void {
       foreach ($this->sources as $s) {
         if ($s->valid()) {
           $s->next();
@@ -40,7 +51,7 @@
       ++$this->key;
     }
 
-    public function key() {
+    public function key(): int {
       return $this->key;
     }
 
@@ -50,7 +61,7 @@
       }, false);
     }
 
-    public function rewind() {
+    public function rewind(): void {
       foreach ($this->sources as $s) {
         $s->rewind();
       }

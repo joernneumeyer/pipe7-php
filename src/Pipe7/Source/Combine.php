@@ -4,9 +4,21 @@
 
   use Iterator;
 
+  /**
+   * @package Neu\Source
+   */
   class Combine implements Iterator {
+
+    /**
+     * @var Iterator[]
+     */
     private $sources;
+
+    /**
+     * @var int
+     */
     private $key = 0;
+
     /**
      * @param array<Iterator> $sources
      */
@@ -19,20 +31,20 @@
       $this->sources = $sources;
     }
 
-    public function current() {
+    public function current(): array {
       return array_map(function (Iterator $i) {
         return $i->current();
       }, $this->sources);
     }
 
-    public function next() {
+    public function next(): void {
       foreach ($this->sources as $s) {
         $s->next();
       }
       ++$this->key;
     }
 
-    public function key() {
+    public function key(): int {
       return $this->key;
     }
 
@@ -42,7 +54,7 @@
       }, true);
     }
 
-    public function rewind() {
+    public function rewind(): void {
       foreach ($this->sources as $s) {
         $s->rewind();
       }

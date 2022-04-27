@@ -22,6 +22,7 @@
     $a = new ArrayIterator([1, 2, 3]);
     $b = 24;
     expect(function () use ($a, $b) {
+      /** @phpstan-ignore-next-line */
       Sources::combine([$a, $b]);
     })->toThrow(InvalidArgumentException::class);
   });
