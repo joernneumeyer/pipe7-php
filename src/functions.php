@@ -17,6 +17,15 @@
   }
 
   /**
+   * Returns a new {@see ArrayPipe} instance.
+   * @param array $data
+   * @return ArrayPipe
+   */
+  function arrayPipe(array $data): ArrayPipe {
+    return new ArrayPipe($data);
+  }
+
+  /**
    * A function that consumes a specified number of items from a given iterator.
    * If no number of items is specified, a function will be returned,
    * which accepts the number of items it shall return, until the iterator is invalid.
