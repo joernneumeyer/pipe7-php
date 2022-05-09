@@ -9,12 +9,11 @@
 
   /**
    * An iterable data processing unit.
+   * @implements Pipe<mixed>
    * @implements Iterator<mixed>
    * @package Neu\Pipe7
    */
-  class CollectionPipe implements Iterator {
-    private const CHUNK_SIZE = 10000;
-
+  class CollectionPipe implements Pipe, Iterator {
     /** @var Iterator<mixed> */
     private $sourceIterator;
     /** @var int */
@@ -77,7 +76,7 @@
      * @param StatefulOperator|callable $transformer The transforming function to apply to each element.
      * @return CollectionPipe
      */
-    public function map($transformer): CollectionPipe {
+    public function map($transformer): Pipe {
       self::isValidOperator($transformer);
       return new CollectionPipe($this, self::OP_MAP, $transformer);
     }
@@ -89,7 +88,7 @@
      * @param StatefulOperator|callable $predicate The predicate to apply to an element, to check if it should be used.
      * @return CollectionPipe
      */
-    public function filter($predicate): CollectionPipe {
+    public function filter($predicate): Pipe {
       self::isValidOperator($predicate);
       return new CollectionPipe($this, self::OP_FILTER, $predicate);
     }
@@ -101,7 +100,7 @@
      * @param StatefulOperator|callable $transformer The transforming function to apply to each element.
      * @return CollectionPipe
      */
-    public function mapKeys($transformer): CollectionPipe {
+    public function mapKeys($transformer): Pipe {
       self::isValidOperator($transformer);
       return new CollectionPipe($this, self::OP_MAP_KEY, $transformer);
     }
@@ -162,6 +161,7 @@
 
     /**
      * {@inheritdoc}
+     * @retrun mixed
      */
     #[\ReturnTypeWillChange]
     public function current() {
@@ -199,6 +199,7 @@
 
     /**
      * {@inheritdoc}
+     * @retrun mixed
      */
     #[\ReturnTypeWillChange]
     public function key() {
@@ -231,10 +232,10 @@
 
     /**
      * Iterate over each element and apply the callback.
-     * @param Closure $cb The function to apply.
+     * @param callable $cb The function to apply.
      * @return void
      */
-    public function forEach(Closure $cb) {
+    public function forEach(callable $cb): void {
       foreach ($this as $k => $v) {
         ($cb)($v, $k);
       }
